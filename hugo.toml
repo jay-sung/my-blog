@@ -3,6 +3,8 @@ languageCode = 'en-us'
 title = 'Jay Tech Blog'
 theme = 'typo'
 
+googleAnalytics = "G-NPLK8TF6SJ"
+
 [taxonomies]
 tag = 'tags'
 
