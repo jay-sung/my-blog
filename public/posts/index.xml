@@ -6,14 +6,14 @@
     <description>Recent content in Posts on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Nov 2023 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 17 Jul 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Log-Structured Merge Tree</title>
-      <link>http://localhost:1313/posts/sample/</link>
-      <pubDate>Sun, 12 Nov 2023 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/sample/</guid>
-      <description>An LSM Tree overview and Java implementation.</description>
+      <title>최종 목표</title>
+      <link>http://localhost:1313/posts/end-goal/</link>
+      <pubDate>Thu, 17 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/end-goal/</guid>
+      <description>최종적으로는 내가 게임 개발자가 되기 위해 필요한 역량에 대해 사고해보아요.</description>
     </item>
   </channel>
 </rss>
