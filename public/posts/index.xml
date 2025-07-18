@@ -13,7 +13,7 @@
       <link>http://localhost:1313/posts/cpp-mem-manage-lib-1/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/cpp-mem-manage-lib-1/</guid>
-      <description></description>
+      <description>C++에서 포인터를 쓰는 경우 웬만하면 &lt;code&gt;Smart Pointer&lt;/code&gt;를 사용하는 것을 강력하게 권장합니다.</description>
     </item>
     <item>
       <title>최종 목표</title>

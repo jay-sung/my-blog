@@ -2,7 +2,7 @@
 title: "C++ Memory Management (1) - 스마트 포인터"
 author: "Jay645"
 date: "2025-07-18"
-summary: ""
+summary: "C++에서 포인터를 쓰는 경우 웬만하면 `Smart Pointer`를 사용하는 것을 강력하게 권장합니다."
 description: ""
 toc: true
 readTime: true

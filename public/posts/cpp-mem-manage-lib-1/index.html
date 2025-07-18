@@ -41,11 +41,7 @@
 <meta property="og:url" content="http://localhost:1313/posts/cpp-mem-manage-lib-1/">
   <meta property="og:site_name" content="Jay Tech Blog">
   <meta property="og:title" content="C&#43;&#43; Memory Management (1) - 스마트 포인터">
-  <meta property="og:description" content="필요 사전 지식: C&#43;&#43;, Raw Pointer를 다뤄본 경험
-TL;DR
-C&#43;&#43;에서 포인터를 쓰는 경우 웬만하면 Smart Pointer를 사용하는 것을 강력하게 권장합니다.
-개요 # Raw Pointer를 사용하면 Double-Free, Null-Pointer 등의 문제가 발생할 수 있어 사용에 신중함이 요구되었습니다.
-// Double-Free 예제 int* ip = new int; // ... (3천줄 이상의 코드라고 가정) delete ip; // ... (2천줄 이상의 코드라고 가정) delete ip; // 이 한줄로 프로세스는 죽는다. 그렇다면 Raw Pointer를 대신할 Smart Pointer는 과연 무엇일까요?">
+  <meta property="og:description" content="C&#43;&#43;에서 포인터를 쓰는 경우 웬만하면 Smart Pointer를 사용하는 것을 강력하게 권장합니다.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -156,6 +152,7 @@ C&#43;&#43;에서 포인터를 쓰는 경우 웬만하면 Smart Pointer를 사�
     <header class="single-intro-container">
         
         <h1 class="single-title">C&#43;&#43; Memory Management (1) - 스마트 포인터</h1>
+        <p class="single-summary">C++에서 포인터를 쓰는 경우 웬만하면 <code>Smart Pointer</code>를 사용하는 것을 강력하게 권장합니다.</p>
         
         <div class="single-subsummary">
           
