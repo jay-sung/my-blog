@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    C&#43;&#43; Memory Management (1) - 스마트 포인터 | Jay Tech Blog
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/posts/cpp-mem-manage-lib-1/"/>
+
+<meta property="og:url" content="http://localhost:1313/posts/cpp-mem-manage-lib-1/">
+  <meta property="og:site_name" content="Jay Tech Blog">
+  <meta property="og:title" content="C&#43;&#43; Memory Management (1) - 스마트 포인터">
+  <meta property="og:description" content="필요 사전 지식: C&#43;&#43;, Raw Pointer를 다뤄본 경험
+TL;DR
+C&#43;&#43;에서 포인터를 쓰는 경우 웬만하면 Smart Pointer를 사용하는 것을 강력하게 권장합니다.
+개요 # Raw Pointer를 사용하면 Double-Free, Null-Pointer 등의 문제가 발생할 수 있어 사용에 신중함이 요구되었습니다.
+// Double-Free 예제 int* ip = new int; // ... (3천줄 이상의 코드라고 가정) delete ip; // ... (2천줄 이상의 코드라고 가정) delete ip; // 이 한줄로 프로세스는 죽는다. 그렇다면 Raw Pointer를 대신할 Smart Pointer는 과연 무엇일까요?">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-07-18T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-07-18T00:00:00+00:00">
+    <meta property="article:tag" content="Cpp">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.56b1873d8852f8a5a109abda36c1bfcde55cb48e5bcbe0d8c934a196a7dc374a.css" media="all">
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Jay Tech Blog</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/posts/cpp-mem-manage-lib-1/">C&#43;&#43; Memory Management (1) - 스마트 포인터</a></div>
+
+
+<div  class="autonumber" >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">C&#43;&#43; Memory Management (1) - 스마트 포인터</h1>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="author">Jay645 </p>
+            
+            <p class="single-date">
+              <time datetime="2025-07-18T00:00:00&#43;00:00">July 18, 2025</time>
+              &nbsp; · &nbsp;3 min read
+            </p>
+          </div>
+        </div>
+        
+    </header>    
+        <div class="single-tags"><span>
+                  <a href="http://localhost:1313/tags/cpp/">#Cpp</a>
+                </span>
+        </div>
+      <aside class="toc">
+        <p><strong>Table of contents</strong></p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#개요">개요</a></li>
+    <li><a href="#smart-pointer">Smart Pointer</a>
+      <ul>
+        <li><a href="#소유권">소유권</a></li>
+        <li><a href="#unique-ownership-unique_ptr">Unique Ownership (unique_ptr)</a></li>
+        <li><a href="#shared-ownership-shared_ptr">Shared Ownership (shared_ptr)</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </aside>
+    
+    <div class="single-content">
+      <p>필요 사전 지식: C++, Raw Pointer를 다뤄본 경험</p>
+<p><strong>TL;DR</strong></p>
+<blockquote>
+<p>C++에서 포인터를 쓰는 경우 웬만하면 <code>Smart Pointer</code>를 사용하는 것을 강력하게 권장합니다.</p></blockquote>
+<h2 class="heading" id="개요">
+  개요
+  <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
+</h2>
+<p>Raw Pointer를 사용하면 <code>Double-Free</code>, <code>Null-Pointer</code> 등의 문제가 발생할 수 있어 사용에 신중함이 요구되었습니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#888;font-style:italic">// Double-Free 예제
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span>* ip = <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>;
+</span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic">// ... (3천줄 이상의 코드라고 가정)
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span><span style="font-weight:bold;text-decoration:underline">delete</span> ip;
+</span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic">// ... (2천줄 이상의 코드라고 가정)
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span><span style="font-weight:bold;text-decoration:underline">delete</span> ip; <span style="color:#888;font-style:italic">// 이 한줄로 프로세스는 죽는다.
+</span></span></span></code></pre></div><p>그렇다면 Raw Pointer를 대신할 <code>Smart Pointer</code>는 과연 무엇일까요?</p>
+<h2 class="heading" id="smart-pointer">
+  Smart Pointer
+  <a class="anchor" href="#smart-pointer">#</a>
+</h2>
+<p><code>C++11</code>부터 추가된 <code>Smart Pointer</code>는 기존 Raw Pointer 관리에 대한 기능들을 추가한 클래스들을 말합니다.</p>
+<p>스마트 포인터는 다음과 같은 클래스들을 말합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>- unique_ptr
+</span></span><span style="display:flex;"><span>- shared_ptr
+</span></span><span style="display:flex;"><span>- weak_ptr
+</span></span><span style="display:flex;"><span>- auto_ptr (c++17에서 제거되었고 사용하지 않습니다)
+</span></span></code></pre></div><h3 class="heading" id="소유권">
+  소유권
+  <a class="anchor" href="#%ec%86%8c%ec%9c%a0%ea%b6%8c">#</a>
+</h3>
+<p><code>Smart Pointer</code>의 핵심은 <code>소유권</code>입니다. 즉, 포인터를 누가 관리하느냐에 대한 하나의 방법론입니다. 예제를 통해 <code>Smart Pointer</code>의 핵심 개념을 설명하겠습니다.</p>
+<p>소유권은 자원에 대한 접근을 관리하는 방법론입니다. 이를 통해 모두가 자원에 함부로 접근하지 않고 미리 규명된 방식을 통해서 자원을 관리하는 것이 핵심입니다.</p>
+<p><code>Smart Pointer</code>에서 소유권을 활용하는 방식은 다음과 같습니다.</p>
+<ul>
+<li><code>unique ownership</code> : 하나의 개체는 하나의 소유권만 가집니다.</li>
+<li><code>shared ownership</code> : 각각의 개체들은 하나의 같은 소유권을 가집니다.</li>
+</ul>
+<p>그러면 차근차근 알아보겠습니다. 저 두가지의 개념을 이해하면 대부분의 <code>Smart Pointer</code>를 이해했다고 볼 수 있습니다.</p>
+<h3 class="heading" id="unique-ownership-unique_ptr">
+  Unique Ownership (unique_ptr)
+  <a class="anchor" href="#unique-ownership-unique_ptr">#</a>
+</h3>
+<blockquote>
+<p>하나의 개체는 하나의 소유권만 가집니다.</p></blockquote>
+<p>위 문장은 <code>unique_ptr</code>의 핵심입니다. <code>unique_ptr</code>는 하나의 개체만 소유하다 스코프 바깥으로 나갈 경우에 자동으로 release 됩니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std::unique_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; iptr { <span style="font-weight:bold;text-decoration:underline">new</span> <span style="color:#666;font-weight:bold;font-style:italic">int</span>(645) }; <span style="color:#888;font-style:italic">// 첫 리소스 획득
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>} <span style="color:#888;font-style:italic">// 범위를 벗어나면 해제
+</span></span></span></code></pre></div><p><code>unique_ptr</code>에 포인터를 다른 곳으로 옮기면 기존 <code>unique_ptr</code>는 해당 포인터 접근할 수 없습니다 — 리소스의 소유권은 하나만 존재 —.</p>
+<p>포인터는 <code>Deleter</code>를 따로 설정하지 않았다면 스코프 바깥으로 나갈 경우 자동으로 release 됩니다.</p>
+<blockquote>
+<p>여기서 <code>Deleter</code>는 <code>unique_ptr</code>의 두 번째 인자로 설정한 타입을 의미하며 기본적으로 <code>default_deleter</code>로 설정되어 있습니다. 자신이 직접 <code>Deleter</code>를 설정하여 스코프 바깥으로 나갈 경우 호출되는 함수를 정의할 수도 있습니다. 보통 특수한 경우에 활용됩니다 (Linked List, Tree Structure 등)</p></blockquote>
+<h4 class="heading" id="ownership-transfer">
+  Ownership Transfer
+  <a class="anchor" href="#ownership-transfer">#</a>
+</h4>
+<blockquote>
+<p><code>Move Semantics(이동 시멘틱)</code>에 대해서 간단히 설명하겠습니다. C++에서 임시 개체 값은 rvalue로 분류됩니다. std::move는 일반 값을 rvalue로 전달하는 캐스팅 함수입니다 — 여기선 xvalue로 전달하는 목적이지만 크게는 중요하지 않습니다 —.</p></blockquote>
+<p><code>unique_ptr</code>를 다른 곳으로 전달하려면 <code>std::move</code>를 사용하여 소유권을 전달합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">foo</span>(std::unique_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; param) <span style="color:#888;font-style:italic">// 소유권 획득
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>} <span style="color:#888;font-style:italic">// 이 스코프를 벗어나면 해제된다.
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span> <span style="color:#666;font-weight:bold;font-style:italic">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std::unique_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; iptr { <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>(645) };
+</span></span><span style="display:flex;"><span>    foo(std::move(iptr)); <span style="color:#888;font-style:italic">// 소유권 이동
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>    <span style="color:#888;font-style:italic">// iptr의 소유권은 없어짐
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>} <span style="color:#888;font-style:italic">// iptr의 소유권이 없으므로 해제하지 않는다.
+</span></span></span></code></pre></div><p>위 코드는 <code>foo</code> 함수의 인자로 <code>iptr</code>의 소유권을 이동하고 <code>foo</code> 함수의 스코프를 넘어서면 해당 포인터가 해제되는 코드입니다.</p>
+<p>그 다음으로 <code>Shared Ownership</code>에 대해서 알아보겠습니다.</p>
+<h3 class="heading" id="shared-ownership-shared_ptr">
+  Shared Ownership (shared_ptr)
+  <a class="anchor" href="#shared-ownership-shared_ptr">#</a>
+</h3>
+<blockquote>
+<p>각각의 개체들은 하나의 같은 소유권을 가집니다.</p></blockquote>
+<p><code>shared_ptr</code>는 참조 카운팅(reference counting)을 기반으로 동작합니다. 즉, 몇 개의 <code>shared_ptr</code> 인스턴스가 동일한 리소스를 참조하고 있는지를 내부적으로 추적합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">foo</span>(std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; ptr)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#888;font-style:italic">// 함수 내용
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span> <span style="color:#666;font-weight:bold;font-style:italic">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp1 { <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>(645) };
+</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp2 = sp1; <span style="color:#888;font-style:italic">// use_count = 2
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>    foo(sp1); <span style="color:#888;font-style:italic">// use_count = 3
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>} <span style="color:#888;font-style:italic">// 
+</span></span></span></code></pre></div><blockquote>
+<p>다음에 계속</p></blockquote>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flexnowrap">
+
+        <div class="single-pagination-prev">
+            
+            <div class="single-pagination-container-prev">
+                <div class="single-pagination-text">←</div>
+                <div class="single-pagination-text">
+                    <a href="/posts/end-goal/">
+                        최종 목표
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>

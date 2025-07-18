@@ -26,22 +26,22 @@
 <link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
 
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/index.xml" title="Jay Tech Blog">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/smart-pointer/index.xml" title="Jay Tech Blog">
 <meta name="description" content=""/>
 
 
 
 <title>
     
-    Posts | Jay Tech Blog
+    Smart Pointer | Jay Tech Blog
     
 </title>
 
-<link rel="canonical" href="http://localhost:1313/posts/"/>
+<link rel="canonical" href="http://localhost:1313/tags/smart-pointer/"/>
 
-<meta property="og:url" content="http://localhost:1313/posts/">
+<meta property="og:url" content="http://localhost:1313/tags/smart-pointer/">
   <meta property="og:site_name" content="Jay Tech Blog">
-  <meta property="og:title" content="Posts">
+  <meta property="og:title" content="Smart Pointer">
   <meta property="og:description" content="A Tech Blog">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="website">
@@ -111,7 +111,7 @@
         
 
         <p
-            class="small  bold ">
+            class="small ">
             <a href="/posts" >
                 /posts
             </a>
@@ -139,10 +139,10 @@
 
 <div class="list-container">
 
-    <div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span>
-        <a href="/posts/">Posts</a></div>
+    <div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/tags/">Tags</a><span class="breadcrumbs-separator">/</span>
+        <a href="/tags/smart-pointer/">Smart Pointer</a></div>
 
-    <h1>Posts</h1>
+    <h1>Smart Pointer</h1>
     
 
     
@@ -173,32 +173,23 @@
         </p>
 
         
-        <p class="line-summary">  </p>
-        
-    </div>
-</div>
-    
-
-    
-
-    
-    <div class="post-line">
-
-    
-
-    
-        <p class="line-date">17 Jul 2025 </p>
-    
-
-    <div>
-        <p class="line-title">
-            <a href="/posts/end-goal/">
-                최종 목표
-            </a>
-        </p>
-
-        
-        <p class="line-summary"> 최종적으로는 내가 게임 개발자가 되기 위해 필요한 역량에 대해 사고해보아요. </p>
+        <p class="line-summary"> <p>필요 사전 지식: C++, Raw Pointer를 다뤄본 경험</p>
+<p><strong>TL;DR</strong></p>
+<blockquote>
+<p>C++에서 포인터를 쓰는 경우 웬만하면 <code>Smart Pointer</code>를 사용하는 것을 강력하게 권장합니다.</p></blockquote>
+<h2 class="heading" id="개요">
+  개요
+  <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
+</h2>
+<p>Raw Pointer를 사용하면 <code>Double-Free</code>, <code>Null-Pointer</code> 등의 문제가 발생할 수 있어 사용에 신중함이 요구되었습니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#888;font-style:italic">// Double-Free 예제
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span>* ip = <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>;
+</span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic">// ... (3천줄 이상의 코드라고 가정)
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span><span style="font-weight:bold;text-decoration:underline">delete</span> ip;
+</span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic">// ... (2천줄 이상의 코드라고 가정)
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span><span style="font-weight:bold;text-decoration:underline">delete</span> ip; <span style="color:#888;font-style:italic">// 이 한줄로 프로세스는 죽는다.
+</span></span></span></code></pre></div><p>그렇다면 Raw Pointer를 대신할 <code>Smart Pointer</code>는 과연 무엇일까요?</p> </p>
         
     </div>
 </div>
