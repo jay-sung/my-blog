@@ -1,5 +1,5 @@
 ---
-title: "C++ Memory Management (1) - 스마트 포인터"
+title: "C++ Memory Management (1) - Smart Pointer"
 author: "Jay645"
 date: "2025-07-18"
 summary: "C++에서 포인터를 쓰는 경우 웬만하면 `Smart Pointer`를 사용하는 것을 강력하게 권장합니다."
@@ -76,7 +76,7 @@ delete ip; // 이 한줄로 프로세스는 죽는다.
 `unique_ptr`에 포인터를 다른 곳으로 옮기면 기존 `unique_ptr`는 해당 포인터 접근할 수 없습니다 — 리소스의 소유권은 하나만 존재 —. 
 
 포인터는 `Deleter`를 따로 설정하지 않았다면 스코프 바깥으로 나갈 경우 자동으로 release 됩니다. 
-> 여기서 `Deleter`는 `unique_ptr`의 두 번째 인자로 설정한 타입을 의미하며 기본적으로 `default_deleter`로 설정되어 있습니다. 자신이 직접 `Deleter`를 설정하여 스코프 바깥으로 나갈 경우 호출되는 함수를 정의할 수도 있습니다. 보통 특수한 경우에 활용됩니다 (Linked List, Tree Structure 등)
+> 여기서 `Deleter`는 `unique_ptr`의 두 번째 인자로 설정한 타입을 의미하며 기본적으로 `default_deleter`로 설정되어 있습니다. 자신이 직접 `Deleter`를 설정하여 스코프 바깥으로 나갈 경우 호출되는 함수를 정의할 수도 있습니다. 보통 특수한 소멸자가 필요한 경우에 활용됩니다 (Linked List, Tree Structure 등)
 
 #### Ownership Transfer
 
@@ -117,10 +117,63 @@ void foo(std::shared_ptr<int> ptr)
 
 int main()
 {
-    std::shared_ptr<int> sp1 { new int(645) };
+    std::shared_ptr<int> sp1 { new int(645) }; // use_count = 1
     std::shared_ptr<int> sp2 = sp1; // use_count = 2
     foo(sp1); // use_count = 3
-} // 
+}
 ```
 
-> 다음에 계속
+`shared_ptr`는 `use_count`를 통해서 참조 횟수를 측정합니다. 다른 개체가 참조하면 `use_count`의 횟수가 증가하고 — 이때 증감 연산은 atomic하게 동작합니다 — 해당 참조 개체가 해제되면 `use_count` 횟수가 감소합니다.
+- `use_count`가 만약 0이면 해당 포인터는 비어있고 관리되지 않는 개체로 간주되며  자동으로 해제됩니다.
+- `use_count`가 만약 1이면 해당 포인터는 다른 개체에 참조되지 않는 개체로 간주합니다.
+
+하지만 이때 한가지 문제가 발생합니다. 바로 `순환참조(Cyclic Reference)` 문제입니다. 이는 개체 서로가 서로를 참조하여 영원히 메모리를 해제하지 못하는 상황을 의미합니다.
+
+```cpp
+struct B;
+
+struct A {
+    std::shared_ptr<B> b_ptr;
+};
+
+struct B {
+    std::shared_ptr<A> a_ptr;
+};
+
+int main() {
+    auto a = std::make_shared<A>();
+    auto b = std::make_shared<B>();
+    a->b_ptr = b;
+    b->a_ptr = a;
+}
+```
+
+![](./image1.png)
+> 서로를 참조하여 메모리를 해제하지 못한다.
+
+이 문제를 해결하기 위해서 나온 `Smart Pointer`가 `weak_ptr`입니다.
+
+### weak_ptr
+
+`weak_ptr`는 `shared_ptr`의 순환참조(Cyclic Reference)를 해결하기 위한 `Smart Pointer`입니다. `weak_ptr`로 참조한 개체는 `use_count`에 영향을 주지 않으며 `lock()` 메서드를 통해 `shared_ptr`로 바꿔서 사용해야 합니다.
+
+```cpp
+std::shared_ptr<int> sp = std::make_shared<int>(645);
+std::weak_ptr<int> wp = sp;
+
+if (auto temp = wp.lock()) {
+    std::cout << *temp << std::endl; // sp가 살아있다면 사용 가능
+} else {
+    std::cout << "Object expired\n";
+}
+```
+
+## 정리
+
+지금까지 `Smart Pointer`에 대해서 알아보았습니다. 알아본 `Smart Pointer`에 대한 정보를 요약하면 다음과 같습니다.
+
+- `unique_ptr` : 단 하나의 소유권만 필요할 때 유용합니다
+- `shared_ptr` : 여러 개체에 공유해야 할 때 유용합니다.
+- `weak_ptr` : `shared_ptr`에서 발생하는 순환참조를 해결해야 할 때 사용합니다.
+
+`Raw Poiner`의 문제점을 해결하고 싶을 때 `Smart Pointer`는 꽤 휼륭한 선택지로 권장드린다는 말씀으로 이 글을 마치겠습니다.

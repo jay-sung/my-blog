@@ -32,7 +32,7 @@
 
 <title>
     
-    C&#43;&#43; Memory Management (1) - 스마트 포인터 | Jay Tech Blog
+    C&#43;&#43; Memory Management (1) - Smart Pointer | Jay Tech Blog
     
 </title>
 
@@ -40,7 +40,7 @@
 
 <meta property="og:url" content="http://localhost:1313/posts/cpp-mem-manage-lib-1/">
   <meta property="og:site_name" content="Jay Tech Blog">
-  <meta property="og:title" content="C&#43;&#43; Memory Management (1) - 스마트 포인터">
+  <meta property="og:title" content="C&#43;&#43; Memory Management (1) - Smart Pointer">
   <meta property="og:description" content="C&#43;&#43;에서 포인터를 쓰는 경우 웬만하면 Smart Pointer를 사용하는 것을 강력하게 권장합니다.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
@@ -144,14 +144,14 @@
 
 
 <div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
-        <a href="/posts/cpp-mem-manage-lib-1/">C&#43;&#43; Memory Management (1) - 스마트 포인터</a></div>
+        <a href="/posts/cpp-mem-manage-lib-1/">C&#43;&#43; Memory Management (1) - Smart Pointer</a></div>
 
 
 <div  class="autonumber" >
   <article>
     <header class="single-intro-container">
         
-        <h1 class="single-title">C&#43;&#43; Memory Management (1) - 스마트 포인터</h1>
+        <h1 class="single-title">C&#43;&#43; Memory Management (1) - Smart Pointer</h1>
         <p class="single-summary">C++에서 포인터를 쓰는 경우 웬만하면 <code>Smart Pointer</code>를 사용하는 것을 강력하게 권장합니다.</p>
         
         <div class="single-subsummary">
@@ -162,7 +162,7 @@
             
             <p class="single-date">
               <time datetime="2025-07-18T00:00:00&#43;00:00">July 18, 2025</time>
-              &nbsp; · &nbsp;3 min read
+              &nbsp; · &nbsp;4 min read
             </p>
           </div>
         </div>
@@ -182,8 +182,10 @@
         <li><a href="#소유권">소유권</a></li>
         <li><a href="#unique-ownership-unique_ptr">Unique Ownership (unique_ptr)</a></li>
         <li><a href="#shared-ownership-shared_ptr">Shared Ownership (shared_ptr)</a></li>
+        <li><a href="#weak_ptr">weak_ptr</a></li>
       </ul>
     </li>
+    <li><a href="#정리">정리</a></li>
   </ul>
 </nav>
       </aside>
@@ -241,7 +243,7 @@
 </span></span></span></code></pre></div><p><code>unique_ptr</code>에 포인터를 다른 곳으로 옮기면 기존 <code>unique_ptr</code>는 해당 포인터 접근할 수 없습니다 — 리소스의 소유권은 하나만 존재 —.</p>
 <p>포인터는 <code>Deleter</code>를 따로 설정하지 않았다면 스코프 바깥으로 나갈 경우 자동으로 release 됩니다.</p>
 <blockquote>
-<p>여기서 <code>Deleter</code>는 <code>unique_ptr</code>의 두 번째 인자로 설정한 타입을 의미하며 기본적으로 <code>default_deleter</code>로 설정되어 있습니다. 자신이 직접 <code>Deleter</code>를 설정하여 스코프 바깥으로 나갈 경우 호출되는 함수를 정의할 수도 있습니다. 보통 특수한 경우에 활용됩니다 (Linked List, Tree Structure 등)</p></blockquote>
+<p>여기서 <code>Deleter</code>는 <code>unique_ptr</code>의 두 번째 인자로 설정한 타입을 의미하며 기본적으로 <code>default_deleter</code>로 설정되어 있습니다. 자신이 직접 <code>Deleter</code>를 설정하여 스코프 바깥으로 나갈 경우 호출되는 함수를 정의할 수도 있습니다. 보통 특수한 소멸자가 필요한 경우에 활용됩니다 (Linked List, Tree Structure 등)</p></blockquote>
 <h4 class="heading" id="ownership-transfer">
   Ownership Transfer
   <a class="anchor" href="#ownership-transfer">#</a>
@@ -277,12 +279,80 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span> <span style="color:#666;font-weight:bold;font-style:italic">main</span>()
 </span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp1 { <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>(645) };
-</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp2 = sp1; <span style="color:#888;font-style:italic">// use_count = 2
+</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp1 { <span style="font-weight:bold;text-decoration:underline">new</span> <span style="font-weight:bold;text-decoration:underline">int</span>(645) }; <span style="color:#888;font-style:italic">// use_count = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>    std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp2 = sp1; <span style="color:#888;font-style:italic">// use_count = 2
 </span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>    foo(sp1); <span style="color:#888;font-style:italic">// use_count = 3
-</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>} <span style="color:#888;font-style:italic">// 
-</span></span></span></code></pre></div><blockquote>
-<p>다음에 계속</p></blockquote>
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>}
+</span></span></code></pre></div><p><code>shared_ptr</code>는 <code>use_count</code>를 통해서 참조 횟수를 측정합니다. 다른 개체가 참조하면 <code>use_count</code>의 횟수가 증가하고 — 이때 증감 연산은 atomic하게 동작합니다 — 해당 참조 개체가 해제되면 <code>use_count</code> 횟수가 감소합니다.</p>
+<ul>
+<li><code>use_count</code>가 만약 0이면 해당 포인터는 비어있고 관리되지 않는 개체로 간주되며  자동으로 해제됩니다.</li>
+<li><code>use_count</code>가 만약 1이면 해당 포인터는 다른 개체에 참조되지 않는 개체로 간주합니다.</li>
+</ul>
+<p>하지만 이때 한가지 문제가 발생합니다. 바로 <code>순환참조(Cyclic Reference)</code> 문제입니다. 이는 개체 서로가 서로를 참조하여 영원히 메모리를 해제하지 못하는 상황을 의미합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">B</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">A</span> {
+</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;B&gt; b_ptr;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">B</span> {
+</span></span><span style="display:flex;"><span>    std::shared_ptr&lt;A&gt; a_ptr;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">int</span> <span style="color:#666;font-weight:bold;font-style:italic">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">auto</span> a = std::make_shared&lt;A&gt;();
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">auto</span> b = std::make_shared&lt;B&gt;();
+</span></span><span style="display:flex;"><span>    a-&gt;b_ptr = b;
+</span></span><span style="display:flex;"><span>    b-&gt;a_ptr = a;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>
+
+
+
+
+
+
+
+
+
+
+
+<figure class="">
+
+    <div class="img-container" style="--w: 1742; --h: 802;">
+        <img loading="lazy" alt="" src="/posts/image1.png" width="1742" height="802">
+    </div>
+
+    
+</figure>
+</p>
+<blockquote>
+<p>서로를 참조하여 메모리를 해제하지 못한다.</p></blockquote>
+<p>이 문제를 해결하기 위해서 나온 <code>Smart Pointer</code>가 <code>weak_ptr</code>입니다.</p>
+<h3 class="heading" id="weak_ptr">
+  weak_ptr
+  <a class="anchor" href="#weak_ptr">#</a>
+</h3>
+<p><code>weak_ptr</code>는 <code>shared_ptr</code>의 순환참조(Cyclic Reference)를 해결하기 위한 <code>Smart Pointer</code>입니다. <code>weak_ptr</code>로 참조한 개체는 <code>use_count</code>에 영향을 주지 않으며 <code>lock()</code> 메서드를 통해 <code>shared_ptr</code>로 바꿔서 사용해야 합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std::shared_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; sp = std::make_shared&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt;(645);
+</span></span><span style="display:flex;"><span>std::weak_ptr&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; wp = sp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">if</span> (<span style="font-weight:bold;text-decoration:underline">auto</span> temp = wp.lock()) {
+</span></span><span style="display:flex;"><span>    std::cout &lt;&lt; *temp &lt;&lt; std::endl; <span style="color:#888;font-style:italic">// sp가 살아있다면 사용 가능
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>} <span style="font-weight:bold;text-decoration:underline">else</span> {
+</span></span><span style="display:flex;"><span>    std::cout &lt;&lt; <span style="color:#666;font-style:italic">&#34;Object expired</span><span style="color:#666;font-style:italic">\n</span><span style="color:#666;font-style:italic">&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 class="heading" id="정리">
+  정리
+  <a class="anchor" href="#%ec%a0%95%eb%a6%ac">#</a>
+</h2>
+<p>지금까지 <code>Smart Pointer</code>에 대해서 알아보았습니다. 알아본 <code>Smart Pointer</code>에 대한 정보를 요약하면 다음과 같습니다.</p>
+<ul>
+<li><code>unique_ptr</code> : 단 하나의 소유권만 필요할 때 유용합니다</li>
+<li><code>shared_ptr</code> : 여러 개체에 공유해야 할 때 유용합니다.</li>
+<li><code>weak_ptr</code> : <code>shared_ptr</code>에서 발생하는 순환참조를 해결해야 할 때 사용합니다.</li>
+</ul>
+<p><code>Raw Poiner</code>의 문제점을 해결하고 싶을 때 <code>Smart Pointer</code>는 꽤 휼륭한 선택지로 권장드린다는 말씀으로 이 글을 마치겠습니다.</p>
 
     </div>
   </article>
