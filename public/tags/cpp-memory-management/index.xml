@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cpp on Jay Tech Blog</title>
-    <link>https://example.org/tags/cpp/</link>
-    <description>Recent content in Cpp on Jay Tech Blog</description>
+    <title>Cpp-Memory-Management on Jay Tech Blog</title>
+    <link>https://example.org/tags/cpp-memory-management/</link>
+    <description>Recent content in Cpp-Memory-Management on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 21 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://example.org/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/tags/cpp-memory-management/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>C&#43;&#43; Memory Management (2) - Allocator</title>
       <link>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-2/</link>

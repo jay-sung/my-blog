@@ -3,13 +3,12 @@ title: "C++ Memory Management (1) - Smart Pointer"
 author: "Jay645"
 date: "2025-07-18"
 summary: "C++에서 포인터를 쓰는 경우 웬만하면 `Smart Pointer`를 사용하는 것을 강력하게 권장합니다."
-description: ""
 toc: true
 readTime: true
 autonumber: true
 math: false
-tags: ["cpp"]
-showTags: true
+tags: ["cpp", "cpp-memory-management"]
+showTags: false
 hideBackToTop: false
 ---
 
@@ -148,7 +147,8 @@ int main() {
 }
 ```
 
-![](./image1.png)
+![](/images/shared-ptr-circlic-exapmle-code.jpg)
+
 > 서로를 참조하여 메모리를 해제하지 못한다.
 
 이 문제를 해결하기 위해서 나온 `Smart Pointer`가 `weak_ptr`입니다.
@@ -176,4 +176,4 @@ if (auto temp = wp.lock()) {
 - `shared_ptr` : 여러 개체에 공유해야 할 때 유용합니다.
 - `weak_ptr` : `shared_ptr`에서 발생하는 순환참조를 해결해야 할 때 사용합니다.
 
-`Raw Poiner`의 문제점을 해결하고 싶을 때 `Smart Pointer`는 꽤 휼륭한 선택지로 권장드린다는 말씀으로 이 글을 마치겠습니다.
+`Raw Poiner`의 문제점을 해결하고 싶을 때 `Smart Pointer`는 꽤 휼륭한 선택지로 권장드립니다.

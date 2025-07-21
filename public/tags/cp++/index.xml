@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cp&#43;&#43; on Jay Tech Blog</title>
+    <link>http://localhost:1313/tags/cp&#43;&#43;/</link>
+    <description>Recent content in Cp&#43;&#43; on Jay Tech Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 21 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/cp++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; Memory Management (2) - Allocator</title>
+      <link>http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-2/</link>
+      <pubDate>Mon, 21 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-2/</guid>
+      <description>&lt;code&gt;Allocator&lt;/code&gt;는 메모리 관리를 추상화한 개체로, 컨테이너가 메모리를 할당하거나 해제할 때 사용하는 &lt;code&gt;정책 템플릿 클래스&lt;/code&gt;입니다. 표준 컨테이너는 내부적으로 &lt;code&gt;std::allocator&lt;/code&gt;를 사용하여 메모리를 관리합니다.</description>
+    </item>
+  </channel>
+</rss>
