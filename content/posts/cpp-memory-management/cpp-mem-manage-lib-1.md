@@ -173,3 +173,5 @@ if (auto temp = wp.lock()) {
 - `weak_ptr` : `shared_ptr`에서 발생하는 순환참조를 해결해야 할 때 사용합니다.
 
 `Raw Poiner`의 문제점을 해결하고 싶을 때 `Smart Pointer`는 꽤 휼륭한 선택지로 권장드립니다.
+
+> 참고 자료: https://cppreference.com/w/cpp/memory.html#Memory_resources
