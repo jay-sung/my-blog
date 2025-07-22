@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    C&#43;&#43; Memory Management (3) - Memory resources | Jay Tech Blog
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-3/"/>
+
+<meta property="og:url" content="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-3/">
+  <meta property="og:site_name" content="Jay Tech Blog">
+  <meta property="og:title" content="C&#43;&#43; Memory Management (3) - Memory resources">
+  <meta property="og:description" content="Allocator는 대부분에 경우에는 기본으로 제공하는 Allocator를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-07-22T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-07-22T00:00:00+00:00">
+    <meta property="article:tag" content="Cpp">
+    <meta property="article:tag" content="Cpp-Memory-Management">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.56b1873d8852f8a5a109abda36c1bfcde55cb48e5bcbe0d8c934a196a7dc374a.css" media="all">
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Jay Tech Blog</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-3/">C&#43;&#43; Memory Management (3) - Memory resources</a></div>
+
+
+<div  class="autonumber" >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">C&#43;&#43; Memory Management (3) - Memory resources</h1>
+        <p class="single-summary"><code>Allocator</code>는 대부분에 경우에는 기본으로 제공하는 <code>Allocator</code>를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</p>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="author">Jay645 </p>
+            
+            <p class="single-date">
+              <time datetime="2025-07-22T00:00:00&#43;00:00">July 22, 2025</time>
+              &nbsp; · &nbsp;3 min read
+            </p>
+          </div>
+        </div>
+        
+    </header>
+      <aside class="toc">
+        <p><strong>Table of contents</strong></p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#개요">개요</a></li>
+    <li><a href="#memory_resouce">memory_resouce</a></li>
+    <li><a href="#기본-제공-memory_resource">기본 제공 memory_resource</a></li>
+    <li><a href="#getset-resource">get/set resource</a></li>
+    <li><a href="#custom-memory_resource-예제">Custom <code>memory_resource</code> 예제</a></li>
+    <li><a href="#정리">정리</a></li>
+  </ul>
+</nav>
+      </aside>
+    
+    <div class="single-content">
+      <blockquote>
+<p><code>C++ Memory Management (2) - Allocator</code> 부분을 읽고 오시면 더 이해하기 좋습니다.</p></blockquote>
+<p>필요 사전 지식: C++, STL Container에 대한 간단한 지식</p>
+<h2 class="heading" id="개요">
+  개요
+  <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
+</h2>
+<p>템플릿 기반 <code>Allocator</code>로는 런타임에 메모리 전략을 바꾸는 것이 어려워 C++17에서 <code>Polymorphic Memory Resource (PMR)</code>이 나왔습니다.</p>
+<p>Memory resources는 <code>Allocator</code>의 전략 패턴으로 봐도 무방합니다. <code>memory_resouce</code> 추상 클래스를 상속 받아 런타임에 메모리 할당 전략을 유연하게 수정할 수 있습니다.</p>
+<blockquote>
+<p>전략 패턴: 개체의 행위를 추상화한 패턴. 이를 통해 개체의 행위를 유연하게 수정 및 변경할 수 있다.</p></blockquote>
+<ul>
+<li><code>Allocator</code> : 템플릿 기반 컴파일 타임.</li>
+<li><code>PMR</code> : 클래스 기반 런타임.</li>
+</ul>
+<p>이렇게 정리 할 수 있으며, <code>PMR</code>기반 코드들은 std::pmr 네임스페이스 하위로 구성되어 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std::pmr::vector&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; v { std::pmr::new_delete_resource() };
+</span></span></code></pre></div><h2 class="heading" id="memory_resouce">
+  memory_resouce
+  <a class="anchor" href="#memory_resouce">#</a>
+</h2>
+<p>위에서 설명한 <code>memory_resource</code>에 대해서 자세하게 살펴보겠습니다. 이 추상 클래스는 다음 세 가지 순수 가상 함수로 구성되어 있습니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">memory_resource</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span>* allocate(size_t bytes, size_t alignment = <span style="font-weight:bold;text-decoration:underline">alignof</span>(std::max_align_t));
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">deallocate</span>(<span style="font-weight:bold;text-decoration:underline">void</span>* p, size_t bytes, size_t alignment = <span style="font-weight:bold;text-decoration:underline">alignof</span>(std::max_align_t));
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">bool</span> <span style="color:#666;font-weight:bold;font-style:italic">is_equal</span>(<span style="font-weight:bold;text-decoration:underline">const</span> memory_resource&amp; other) <span style="font-weight:bold;text-decoration:underline">const</span> <span style="font-weight:bold;text-decoration:underline">noexcept</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">protected</span>:
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">virtual</span> <span style="font-weight:bold;text-decoration:underline">void</span>* do_allocate(size_t bytes, size_t alignment) = 0;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">virtual</span> <span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">do_deallocate</span>(<span style="font-weight:bold;text-decoration:underline">void</span>* p, size_t bytes, size_t alignment) = 0;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">virtual</span> <span style="font-weight:bold;text-decoration:underline">bool</span> <span style="color:#666;font-weight:bold;font-style:italic">do_is_equal</span>(<span style="font-weight:bold;text-decoration:underline">const</span> memory_resource&amp; other) <span style="font-weight:bold;text-decoration:underline">const</span> <span style="font-weight:bold;text-decoration:underline">noexcept</span> = 0;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>물론 이 클래스를 직접 사용할 일은 없고, 보통 이를 상속한 다양한 메모리 전략 개체를 통해 사용됩니다.</p>
+<h2 class="heading" id="기본-제공-memory_resource">
+  기본 제공 memory_resource
+  <a class="anchor" href="#%ea%b8%b0%eb%b3%b8-%ec%a0%9c%ea%b3%b5-memory_resource">#</a>
+</h2>
+<p><code>PMR</code>에서 제공하는 기본적인 <code>memory_resource</code>를 알아보겠습니다.</p>
+<ul>
+<li><code>new_delete_resoucrce</code> : 전통적인 <code>new</code> / <code>delete</code> 기반 전략입니다. global <code>opeartor new</code>/<code>operator delete</code>을 통해 할당 및 해제합니다.</li>
+<li><code>null_memory_resource</code> : 메모리 할당이 항상 실패(std::bad_alloc)하는 <code>memory_resource</code>입니다. 메모리 할당에 대한 테스트를 위해 사용됩니다.</li>
+<li><code>monotonic_buffer_resource</code> : 해제를 리소스가 소멸될 때 한번에 해제합니다. 임시 개체를 관리할 때 유용합니다.</li>
+<li><code>synchronized_pool_resource</code> : <code>thread-safe</code>한 풀 기반 할당입니다.</li>
+<li><code>unsynchronized_pool_resource</code> : <code>thread-safe</code>하지 않은 풀 기반 할당입니다.</li>
+</ul>
+<h2 class="heading" id="getset-resource">
+  get/set resource
+  <a class="anchor" href="#getset-resource">#</a>
+</h2>
+<p>이 기본 리소스는 <code>set_default_resource()</code>를 통해 변경할 수 있습니다. 변경 시 <code>전역(static)</code>으로 적용되며, 이후 생성되는 컨테이너들에 영향을 줍니다.</p>
+<p><code>std::pmr</code>에서는 별도의 <code>memory_resource</code>를 명시하지 않으면 내부적으로 <code>get_default_resource()</code>로 변환되는 리소스를 사용합니다. 이 기본 리소스는 <code>set_default_resource()</code>를 통해 변경할 수 있습니다 — <code>set_default_resource()</code>와 <code>get_default_resource</code>는 <code>thread-safe</code>하게 동작합니다. —</p>
+<h2 class="heading" id="custom-memory_resource-예제">
+  Custom <code>memory_resource</code> 예제
+  <a class="anchor" href="#custom-memory_resource-%ec%98%88%ec%a0%9c">#</a>
+</h2>
+<p>간단한 로깅용 <code>memory_resource</code>를 만들어보겠습니다. 이 전략은 할당/해제 시마다 로그를 출력합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">LoggingResource</span> : <span style="font-weight:bold;text-decoration:underline">public</span> std::pmr::memory_resource
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">public</span>:
+</span></span><span style="display:flex;"><span>    LoggingResource(std::pmr::memory_resource* upstream = std::pmr::new_delete_resource())
+</span></span><span style="display:flex;"><span>        : m_upstream(upstream) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">protected</span>:
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span>* do_allocate(size_t bytes, size_t alignment) <span style="font-weight:bold;text-decoration:underline">override</span> {
+</span></span><span style="display:flex;"><span>        std::cout &lt;&lt; <span style="color:#666;font-style:italic">&#34;[alloc] &#34;</span> &lt;&lt; bytes &lt;&lt; <span style="color:#666;font-style:italic">&#34; bytes</span><span style="color:#666;font-style:italic">\n</span><span style="color:#666;font-style:italic">&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">return</span> m_upstream-&gt;allocate(bytes, alignment);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">do_deallocate</span>(<span style="font-weight:bold;text-decoration:underline">void</span>* p, size_t bytes, size_t alignment) <span style="font-weight:bold;text-decoration:underline">override</span> {
+</span></span><span style="display:flex;"><span>        std::cout &lt;&lt; <span style="color:#666;font-style:italic">&#34;[dealloc] &#34;</span> &lt;&lt; bytes &lt;&lt; <span style="color:#666;font-style:italic">&#34; bytes</span><span style="color:#666;font-style:italic">\n</span><span style="color:#666;font-style:italic">&#34;</span>;
+</span></span><span style="display:flex;"><span>        m_upstream-&gt;deallocate(p, bytes, alignment);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">bool</span> <span style="color:#666;font-weight:bold;font-style:italic">do_is_equal</span>(<span style="font-weight:bold;text-decoration:underline">const</span> memory_resource&amp; other) <span style="font-weight:bold;text-decoration:underline">const</span> <span style="font-weight:bold;text-decoration:underline">noexcept</span> <span style="font-weight:bold;text-decoration:underline">override</span> {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">return</span> <span style="font-weight:bold;text-decoration:underline">this</span> == &amp;other;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">private</span>:
+</span></span><span style="display:flex;"><span>    std::pmr::memory_resource* m_upstream;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>LoggingResource logger;
+</span></span><span style="display:flex;"><span>std::pmr::vector&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt; v(&amp;logger);
+</span></span><span style="display:flex;"><span>v.push_back(10); <span style="color:#888;font-style:italic">// 할당 로그 출력
+</span></span></span></code></pre></div><h2 class="heading" id="정리">
+  정리
+  <a class="anchor" href="#%ec%a0%95%eb%a6%ac">#</a>
+</h2>
+<p>그러면 정리해보겠습니다. <code>PMR</code>은 다음과 같은 경우에 유용합니다.</p>
+<ul>
+<li>많은 소규모 할당을 빠르게 처리해야 할 때 (e.g. 게임 프레임 버퍼)</li>
+<li>메모리 해제를 수동으로 관리하기 어려운 경우</li>
+<li>특정 영역 안에서만 동작하는 파서, 트랜잭션, 요청 처리 등</li>
+<li>메모리 추적, 디버깅, 로깅이 필요한 경우</li>
+</ul>
+<p>템플릿 기반 <code>Allocator</code>는 여전히 대부분의 경우 충분합니다. 하지만 복잡한 메모리 정책이 필요하거나 런타임에 정책을 바꿔야 한다면 <code>PMR</code>은 훌륭한 대안이 됩니다.</p>
+<blockquote>
+<p>참고 자료: <a href="https://cppreference.com/w/cpp/memory.html#Memory_resources">https://cppreference.com/w/cpp/memory.html#Memory_resources</a></p></blockquote>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flexnowrap">
+
+        <div class="single-pagination-prev">
+            
+            <div class="single-pagination-container-prev">
+                <div class="single-pagination-text">←</div>
+                <div class="single-pagination-text">
+                    <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-2/">
+                        C&#43;&#43; Memory Management (2) - Allocator
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>

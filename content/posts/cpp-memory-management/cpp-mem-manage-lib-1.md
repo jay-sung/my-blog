@@ -14,10 +14,6 @@ hideBackToTop: false
 
 필요 사전 지식: C++, Raw Pointer를 다뤄본 경험
 
-**TL;DR**
-
-> C++에서 포인터를 쓰는 경우 웬만하면 `Smart Pointer`를 사용하는 것을 강력하게 권장합니다.
-
 ## 개요
 
 Raw Pointer를 사용하면 `Double-Free`, `Null-Pointer` 등의 문제가 발생할 수 있어 사용에 신중함이 요구되었습니다.

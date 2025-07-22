@@ -36,9 +36,9 @@
     
 </title>
 
-<link rel="canonical" href="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-2/"/>
+<link rel="canonical" href="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-23/"/>
 
-<meta property="og:url" content="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-2/">
+<meta property="og:url" content="http://localhost:1313/posts/cpp-memory-management/cpp-mem-manage-lib-23/">
   <meta property="og:site_name" content="Jay Tech Blog">
   <meta property="og:title" content="C&#43;&#43; Memory Management (2) - Allocator">
   <meta property="og:description" content="Allocator는 대부분에 경우에는 기본으로 제공하는 Allocator를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.">
@@ -145,7 +145,7 @@
 
 
 <div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
-        <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-2/">C&#43;&#43; Memory Management (2) - Allocator</a></div>
+        <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-23/">C&#43;&#43; Memory Management (2) - Allocator</a></div>
 
 
 <div  class="autonumber" >
@@ -182,7 +182,10 @@
       </aside>
     
     <div class="single-content">
-      <p>필요 사전 지식: C++, STL Container에 대한 간단한 지식</p>
+      <p>필요 사전 지식: C++, Raw Pointer를 다뤄본 경험</p>
+<p><strong>TL;DR</strong></p>
+<blockquote>
+<p><code>Allocator</code>는 대부분에 경우에는 기본으로 제공하는 <code>Allocator</code>를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</p></blockquote>
 <h2 class="heading" id="개요">
   개요
   <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
@@ -284,8 +287,6 @@
 <li><code>rebind_traits&lt;T&gt;</code> : 라이브러리 구현자가 traits 연산을 반복적으로 쓰고 싶을 때 상요합니다. (<code>std::allocator_traits&lt;rebind_alloc&lt;T&gt;&gt;</code>)</li>
 </ul>
 <p><code>Allocator</code>에 대한 더 많은 내용들은 <code>Memory resources</code>에서 더 알아보겠습니다.</p>
-<blockquote>
-<p>참고 자료: <a href="https://cppreference.com/w/cpp/memory.html#Memory_resources">https://cppreference.com/w/cpp/memory.html#Memory_resources</a></p></blockquote>
 
     </div>
   </article>
@@ -319,8 +320,8 @@
             
             <div class="single-pagination-container-next">
                 <div class="single-pagination-text">
-                    <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-3/">
-                        C&#43;&#43; Memory Management (3) - Memory resources
+                    <a href="/posts/cpp-memory-management/cpp-mem-manage-lib-2/">
+                        C&#43;&#43; Memory Management (2) - Allocator
                     </a>
                 </div>
                 <div class="single-pagination-text">→</div>

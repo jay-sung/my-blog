@@ -12,11 +12,7 @@ showTags: false
 hideBackToTop: false
 ---
 
-필요 사전 지식: C++, Raw Pointer를 다뤄본 경험
-
-**TL;DR**
-
-> `Allocator`는 대부분에 경우에는 기본으로 제공하는 `Allocator`를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.
+필요 사전 지식: C++, STL Container에 대한 간단한 지식
 
 ## 개요
 
@@ -127,3 +123,5 @@ typename MyAllocator<int>::rebind<double>::other
 - `rebind_traits<T>` : 라이브러리 구현자가 traits 연산을 반복적으로 쓰고 싶을 때 상요합니다. (`std::allocator_traits<rebind_alloc<T>>`)
 
 `Allocator`에 대한 더 많은 내용들은 `Memory resources`에서 더 알아보겠습니다.
+
+> 참고 자료: https://cppreference.com/w/cpp/memory.html#Memory_resources
