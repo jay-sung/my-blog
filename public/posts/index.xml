@@ -10,23 +10,23 @@
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>C&#43;&#43; Memory Management (3) - Memory resources</title>
-      <link>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-3/</link>
+      <link>https://example.org/posts/cpp-mem-manage-lib-3/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-3/</guid>
+      <guid>https://example.org/posts/cpp-mem-manage-lib-3/</guid>
       <description>&lt;code&gt;Allocator&lt;/code&gt;는 대부분에 경우에는 기본으로 제공하는 &lt;code&gt;Allocator&lt;/code&gt;를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</description>
     </item>
     <item>
       <title>C&#43;&#43; Memory Management (2) - Allocator</title>
-      <link>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-2/</link>
+      <link>https://example.org/posts/cpp-mem-manage-lib-2/</link>
       <pubDate>Mon, 21 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-2/</guid>
+      <guid>https://example.org/posts/cpp-mem-manage-lib-2/</guid>
       <description>&lt;code&gt;Allocator&lt;/code&gt;는 대부분에 경우에는 기본으로 제공하는 &lt;code&gt;Allocator&lt;/code&gt;를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</description>
     </item>
     <item>
       <title>C&#43;&#43; Memory Management (1) - Smart Pointer</title>
-      <link>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-1/</link>
+      <link>https://example.org/posts/cpp-mem-manage-lib-1/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-memory-management/cpp-mem-manage-lib-1/</guid>
+      <guid>https://example.org/posts/cpp-mem-manage-lib-1/</guid>
       <description>C++에서 포인터를 쓰는 경우 웬만하면 &lt;code&gt;Smart Pointer&lt;/code&gt;를 사용하는 것을 강력하게 권장합니다.</description>
     </item>
     <item>
