@@ -1,7 +1,7 @@
 ---
 title: "C++ Memory Management (4) - C++ Memory helper class"
 author: "Jay645"
-date: "2025-07-22"
+date: "2025-07-23"
 summary: "C++에서 제공하는 Memory helper class에 대해서 알아봅니다."
 toc: true
 readTime: true
