@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Dotnet-Gc on Jay Tech Blog</title>
-    <link>https://example.org/tags/dotnet-gc/</link>
-    <description>Recent content in Dotnet-Gc on Jay Tech Blog</description>
+    <title>Csharp on Jay Tech Blog</title>
+    <link>https://example.org/tags/csharp/</link>
+    <description>Recent content in Csharp on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 25 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://example.org/tags/dotnet-gc/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/tags/csharp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>.NET GC Deep Dive - .NET GC Introduction (1)</title>
       <link>https://example.org/posts/csharp-gc-series/cpp-mem-manage-lib-1/</link>
