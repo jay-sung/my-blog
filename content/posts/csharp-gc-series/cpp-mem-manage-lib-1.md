@@ -7,7 +7,7 @@ toc: true
 readTime: true
 autonumber: true
 math: false
-tags: ["c#", "dotnet-gc"]
+tags: ["csharp", "dotnet-gc"]
 showTags: false
 hideBackToTop: false
 ---
