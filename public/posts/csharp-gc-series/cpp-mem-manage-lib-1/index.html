@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    .NET GC Deep Dive - .NET GC Introduction (1) | Jay Tech Blog
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/posts/csharp-gc-series/cpp-mem-manage-lib-1/"/>
+
+<meta property="og:url" content="http://localhost:1313/posts/csharp-gc-series/cpp-mem-manage-lib-1/">
+  <meta property="og:site_name" content="Jay Tech Blog">
+  <meta property="og:title" content=".NET GC Deep Dive - .NET GC Introduction (1)">
+  <meta property="og:description" content=".NET GC 덕분에 귀찮은 메모리 관리를 위임할 수 있어서 행복합니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-07-25T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-07-25T00:00:00+00:00">
+    <meta property="article:tag" content="C#">
+    <meta property="article:tag" content="Dotnet-Gc">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Jay Tech Blog</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/posts/csharp-gc-series/cpp-mem-manage-lib-1/">.NET GC Deep Dive - .NET GC Introduction (1)</a></div>
+
+
+<div  class="autonumber" >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">.NET GC Deep Dive - .NET GC Introduction (1)</h1>
+        <p class="single-summary">.NET GC 덕분에 귀찮은 메모리 관리를 위임할 수 있어서 행복합니다.</p>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="author">Jay645 </p>
+            
+            <p class="single-date">
+              <time datetime="2025-07-25T00:00:00&#43;00:00">July 25, 2025</time>
+              &nbsp; · &nbsp;10 min read
+            </p>
+          </div>
+        </div>
+        
+    </header>
+      <aside class="toc">
+        <p><strong>Table of contents</strong></p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#개요">개요</a></li>
+    <li><a href="#들어가기-전">들어가기 전</a></li>
+    <li><a href="#clr-메모리">CLR 메모리</a>
+      <ul>
+        <li><a href="#가상-주소-공간virtual-address-space">가상 주소 공간(Virtual Address Space)</a></li>
+      </ul>
+    </li>
+    <li><a href="#메모리-할당">메모리 할당</a></li>
+    <li><a href="#메모리-해제">메모리 해제</a>
+      <ul>
+        <li><a href="#gc-release">GC Release</a></li>
+      </ul>
+    </li>
+    <li><a href="#garbage-수집-조건">Garbage 수집 조건</a></li>
+    <li><a href="#managed-heap">Managed Heap</a></li>
+    <li><a href="#세대">세대</a>
+      <ul>
+        <li><a href="#0세대">0세대</a></li>
+        <li><a href="#1세대">1세대</a></li>
+        <li><a href="#2세대">2세대</a></li>
+      </ul>
+    </li>
+    <li><a href="#유지-및-승격">유지 및 승격</a></li>
+    <li><a href="#임시-세대-및-세그먼트">임시 세대 및 세그먼트</a></li>
+    <li><a href="#gc-collect-중-수행되는-작업">GC Collect 중 수행되는 작업</a></li>
+    <li><a href="#관리되지-않는-리소스">관리되지 않는 리소스</a></li>
+  </ul>
+</nav>
+      </aside>
+    
+    <div class="single-content">
+      <p>필요 사전 지식: .NET, Windows</p>
+<blockquote>
+<p>OS 환경은 Windows를 기준으로 설명합니다.</p></blockquote>
+<h2 class="heading" id="개요">
+  개요
+  <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
+</h2>
+<p>.NET CLR GC(Garbege Collector)는 애플리케이션에 대한 메모리 할당 및 릴리스를 관리합니다. 이로 인해 메모리 관리를 보다 더 안전하고 쉽게 할 수 있습니다. 이 글에서는 .NET GC에 관한 소개로 구성됩니다.</p>
+<h2 class="heading" id="들어가기-전">
+  들어가기 전
+  <a class="anchor" href="#%eb%93%a4%ec%96%b4%ea%b0%80%ea%b8%b0-%ec%a0%84">#</a>
+</h2>
+<p>먼저 GC가 왜 필요한지에 대해서 짚고 넘어가겠습니다. 기존 C/C++ 개발에서 메모리 관리는 오로지 개발자의 자유였습니다. 개발자에 따라서 최고의 성능을 가져오기도 최악의 누수를 유발하기도 했습니다.</p>
+<p>GC는 이런 점을 해결하기 위해 등장했습니다. 필요 없는 개체를 찾아 릴리즈해주는 것처럼 수동적인 메모리 관리를 자동으로 해결해주었죠. 이로 인해 개발자의 메모리 관리 피로도가 많이 낮아지게 되었습니다.</p>
+<h2 class="heading" id="clr-메모리">
+  CLR 메모리
+  <a class="anchor" href="#clr-%eb%a9%94%eb%aa%a8%eb%a6%ac">#</a>
+</h2>
+<p>다음은 중요한 CLR 메모리 개념들입니다. 일단 원문 그대로 보겠습니다.</p>
+<blockquote>
+<p>출처: <a href="https://learn.microsoft.com/ko-kr/dotnet/standard/garbage-collection/fundamentals">https://learn.microsoft.com/ko-kr/dotnet/standard/garbage-collection/fundamentals</a></p></blockquote>
+<ul>
+<li>
+<p>각 프로세스에는 고유한 개별 가장 주소 공간이 있습니다. 동일 컴퓨터의 모든 프로세스는 동일한 실제 메모리와 페이지 파일(있는 경우)을 공유합니다.</p>
+</li>
+<li>
+<p>기본적으로 32비트 컴퓨터에서는 각 프로세스에 2GB 사용자 모드 가상 주소 공간이 포함됩니다.</p>
+</li>
+<li>
+<p>애플리케이션 개발자는 가상 주소 공간만 사용하고 실제 메모리는 조작하지 않습니다. GC는 관리되는 힙에서 사용자 대신 가상 메모리를 할당 및 해제합니다.</p>
+<ul>
+<li>네이티브 코드를 작성 중인 경우 Windows 함수를 사용하여 가상 주소 공간을 작업합니다. 이러한 함수는 네이티브 힙에서 사용자 대신 가상 메모리를 할당 및 해제합니다.</li>
+</ul>
+</li>
+<li>
+<p>가상 메모리는 다음 세 가지 상태일 수 있습니다.</p>
+<ul>
+<li>free : 메모리 블록에 가상 메모리에 대한 참조가 없으며, 메모리 블록을 할당에 사용할 수 있습니다.</li>
+<li>reversed : 메모리 블록을 사용자의 작업에 사용할 수 있으며, 다른 할당 요청에는 메모리 블록을 사용할 수 없습니다. 그러나 커밋될 때까지는 이 메모리 블록에 데이터를 저장할 수 없습니다.</li>
+<li>committed : 메모리 블록이 실제 스토리지에 할당되어 있습니다.</li>
+</ul>
+</li>
+<li>
+<p>가상 주소 공간은 조각화될 수 있으며, 이는 주소 공간에 홀이라고 알려진 여유 블록이 있음을 의미합니다. 가상 주소 메모리 할당이 요청된 경우 가상 메모리 관리자는 할당 요청을 만족시킬 수 있도록 층분히 큰 단일 블록을 찾아야 합니다. 2GB의 여유 공간이 있는 경우에도 전체 여유 공간이 한 주소 블록에 있는 경우가 아니면 2GB가 필요한 할당이 실패할 수 있습니다.</p>
+</li>
+<li>
+<p>예약할 가상 주소 공간이나 커밋할 실제 공간이 층분하지 않은 경우 메모리 부족이 발생할 수 있습니다.</p>
+</li>
+<li>
+<p>실제 메모리 압력(실제 메모리 요구량)이 낮은 경우에도 페이지 파일이 사용됩니다. 실제 메모리 압력이 처음으로 높아지면 운영 체제가 데이터를 저장하기 위해 실제 메모리에 공간을 만들어야 하며, 실제 메모리에 있는 데이터 중 일부를 페이지 파일로 백업합니다. 필요할 때까지는 데이터가 페이지 파일로 저장되지 않으므로 실제 메모리 압력이 낮은 상황에서도 페이징이 발생할 수 있습니다.</p>
+</li>
+</ul>
+<p>정말 양이 많습니다. 천천히 하나 하나 알아보겠습니다.</p>
+<h3 class="heading" id="가상-주소-공간virtual-address-space">
+  가상 주소 공간(Virtual Address Space)
+  <a class="anchor" href="#%ea%b0%80%ec%83%81-%ec%a3%bc%ec%86%8c-%ea%b3%b5%ea%b0%84virtual-address-space">#</a>
+</h3>
+<p>먼저 <code>가장 주소 공간(Virtual Address Space)</code>을 알아보겠습니다. Virtual Address Space는 OS가 각 프로세스에게 제공하는 <code>논리적인 메모리 공간</code>입니다. 실제 물리 메모리와 1 : 1로 연결되지 않고 OS가 가상 주소를 물리 주소로 매핑해줍니다. 이로 인해 서로 충돌없이 독립적으로 메모리를 사용하는 것처럼 동작할 수 있습니다.</p>
+<p>Windows에 경우 위에서 말한데로 세 가지의 상태를 가진 주소(free, reversed, committed)를 WinAPI를 통해 제어합니다 — <code>VirtualAlloc</code> <code>VirtualFree</code> <code>VirtualQuery</code>등을 통해 —</p>
+<p>다음으로 프로세스 공간에 대해서 설명하며 Virtual Address Space에 대해서 설명하겠습니다. Windows Binary PE Format으로 구성되며 PE Segment는 다음과 같습니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>0x0
+</span></span><span style="display:flex;"><span>[user_space]
+</span></span><span style="display:flex;"><span>PE Image (EXE, DLL)
+</span></span><span style="display:flex;"><span>-- .text (코드)
+</span></span><span style="display:flex;"><span>-- .data (전역 변수)
+</span></span><span style="display:flex;"><span>-- .rdata (읽기 전용 데이터)
+</span></span><span style="display:flex;"><span>-- .reloc (재배치 정보)
+</span></span><span style="display:flex;"><span>Heap (malloc/new, GC Heap이 접근하는 공간)
+</span></span><span style="display:flex;"><span>Stack
+</span></span><span style="display:flex;"><span>Memory-mapped files
+</span></span><span style="display:flex;"><span>ETC(그외)
+</span></span><span style="display:flex;"><span>[kernel_space] (여기부터는 사용자 모드로는 접근 불가 영역)
+</span></span></code></pre></div><p>이 영역에서 <code>Heap</code> 영역이 중요합니다. 이 <code>Heap</code>을 GC가 어떻게 관리하느냐가 GC의 핵심이기 때문입니다. 무튼, 프로세스 공간의 <code>Heap</code>이 할당되는 공간이 Virtual Address Space입니다. 그리고 이 공간의 상태가 위에서 말한 free, reversed, committed 상태로 이어지고 WinAPI를 통해 호출하는거죠. 그 이후 Page에서 Physics Memory와 Mapping되어 저장됩니다.</p>
+<pre tabindex="0"><code>[가상 주소 공간 (Virtual Address Space)]
+
+┌───────────────┐
+│ 0x00000000    │
+│   [EXE Image] │
+│   [.text]     │
+│   [.data]     │
+│   [.rdata]    │
+├───────────────┤
+│   [   Heap]   │──┐
+│               │  │
+├───────────────┤  │ 매핑
+│   [Stack]     │  │
+│   [ ... ]     │  │
+└───────────────┘  ▼
+
+[페이지 테이블 (Page Table)] ← 가상 주소 → 물리 주소 매핑 정보를 저장
+
+┌───────────────┐
+│ VA: 0x01000000│ → PA: 0x7F500000
+│ VA: 0x01001000│ → PA: 0x1A204000
+│ VA: 0x01002000│ → [미매핑] (page fault 발생 가능)
+│ ...           │
+└───────────────┘
+
+[물리 메모리 (Physical Memory)]
+
+┌───────────────┐
+│ 0x7F500000    │ ← 실제 데이터 저장
+├───────────────┤
+│ 0x1A204000    │
+├───────────────┤
+│ ...           │
+└───────────────┘
+</code></pre><p>그러면 다시 GC로 넘어가겠습니다.</p>
+<h2 class="heading" id="메모리-할당">
+  메모리 할당
+  <a class="anchor" href="#%eb%a9%94%eb%aa%a8%eb%a6%ac-%ed%95%a0%eb%8b%b9">#</a>
+</h2>
+<p>새 프로세스에서 런타임에 <code>Heap</code>에 할당한 메모리는 <code>Pointer</code>를 통해서 관리됩니다. 이 부분은 <code>Pointer</code>를 다루는 것과 큰 차이는 없습니다. 하지만 GC는 미리 인접한 주소 공간 영역을 예약합니다 — 이 영역을 <code>관리되는 힙(Managed Heap)</code>이라고 부릅니다 — Managed Heap에서는 다음 예약될 Heap의 주소의 포인터를 관리합니다. 모든 참조 형식(Reference Type)은 이 Managed Heap에 할당됩니다.</p>
+<p>애플리케이션에서 처음 참조 형식을 만드는 경우, 기본 주소로 할당됩니다. 그리고 다음 개체를 만들면 첫 번째 개체 바로 다음 주소 공간에 해당 개체에 대한 메모리를 할당합니다. 주소 공간을 사용할 수 있는 한 런타임은 이러한 방법으로 새 개체에 대한 공간을 계속 할당합니다.</p>
+<p>관리되는 힙에서 메모리를 할당하면 관리되지 않는 힙에서 메모리를 할당하는 것보다 일반적으로 속도가 더 빠릅니다. 런타임에서는 포인터에 값을 더하여 개체 메모리를 할당하기 때문에, 스택에서 메모리를 할당하는 속도만큼 빠릅니다. 또한 연속으로 할당된 새 개체는 관리되는 힙에 인접하여 저장되므로 애플리케이션에서 개체에 따른 속도로 엑세스할 수 있습니다.</p>
+<pre tabindex="0"><code>┌────────────────────────────────┐
+│    프로세스 가상 주소 공간                            │
+│                                                   │
+│   ┌────────────────────────┐      │
+│   │    관리되는 힙 영역                     │      │
+│   │                                      │      │
+│   │  [객체1][객체2][객체3]..               │      │
+│   │    ↑                                 │      │
+│   │  할당 포인터 (Next Obj)                │      │
+│   └────────────────────────┘      │
+│                                                   │
+└────────────────────────────────┘
+</code></pre><h2 class="heading" id="메모리-해제">
+  메모리 해제
+  <a class="anchor" href="#%eb%a9%94%eb%aa%a8%eb%a6%ac-%ed%95%b4%ec%a0%9c">#</a>
+</h2>
+<p>GC의 최적화 엔진은 수행 중인 할당에 따라 수집을 수행하기에 가장 적합한 시간을 결정합니다. 먼저 애플리케이션의 루트를 검사하여 더 이상 사용되지 않은 개체를 결정합니다 ─ 루트에는 정적 필드(Static Field), 스레드 스택의 지역 변수, CPU 레지스터, GC Handle, finalize Queue가 포함됩니다 ─ 각 루트는 관리되는 힙에 있는 개체를 참조하거나 Null로 설정됩니다. GC는  나머지 런타임에 이러한 루트를 요청할 수 있으며 GC는 이 목록을 사용하여 모든 개체를 포함하는 Graph를 만듭니다.</p>
+<p>Graph에 없는 개체는 애플리케이션 루트에서 연결할 수 없습니다. GC는 연결할 수 없는 개체를 Garbage로 간주하고 이 개체에 할당된 메모리를 해제합니다. 수집을 수행할 때 GC는 연결할 수 없는 개체에서 사용되는 주소 공간 블록을 찾기 위해 Managed Heap를 검사합니다. 연결할 수 없는 개체가 발견되면 GC는 메모리 복사 기능을 사용하여 메모리에서 연결할 수 있는 개체를 압축합니다. 그러면 연결할 수 없는 개체에 할당된 주소 공간 블록이 해제됩니다. 연결할 수 있는 개체의 메모리가 압축되면 GC는 포인터의 위치를 적절하게 수정합니다. 그러면 애플리케이션 루트는 개체의 새 위치를 가리킬 수 있습니다. 또한 GC는 Managed Heap의 Pointer 위치를 연결할 수 있는 마지막 개체 다음에 지정합니다.</p>
+<p>Collection에서 연결할 수 없는 개체의 수가 엄청나게 발견된 경우에만 메모리를 압축합니다. 수집을 수행한 후에도 Managed Heap에서 모든 개체가 그대로 남아 있다면 메모리 압축을 수행할 필요가 없습니다.</p>
+<p>런타임에서 큰 개체에 메모리는 별도의 힙에 할당합니다(LOH, Large Object Heap). GC는 큰 개체에 할당된 메모리를 자동으로 해제하지만 메모리에서 큰 개체가 이동하는 것을 피하기 위해 일반적으로 이 메모리는 압축하지 않습니다.</p>
+<p>풀어서 설명해보겠습니다.</p>
+<h3 class="heading" id="gc-release">
+  GC Release
+  <a class="anchor" href="#gc-release">#</a>
+</h3>
+<p>GC는 Root라고 불리는 출발점에서 살아있는 개체들을 추적합니다.
+루트는 다음과 같은 곳에서 나옵니다.</p>
+<ul>
+<li>정적 변수</li>
+<li>스레드 스택에 지역 변수</li>
+<li>CPU 레지스터에 저장된 Pointer</li>
+<li>GC Handle</li>
+<li>Finalize Queue</li>
+</ul>
+<p>GC는 Root에서 시작해 개체들이 서로 참조하는 연결 구조(Graph)를 만듭니다. 그래프 안 개체는 &ldquo;살아있는 개체&quot;로 간주됩니다.</p>
+<p>반대로, Root에 도달하지 못한 개체는 더 이상 사용되지 않는 것으로 간주되어 해제됩니다. 이 개체를 Garbage라고 부릅니다.</p>
+<p>GC는 Managed Heap을 스캔하여 Garbage가 차지한 메모리를 확인하고 살아있는 개체들을 메모리 상에서 이동시켜 압축 시킵니다. 이 과정에서 Garbage가 차지한 메모리 공간이 비게 되고, 그 공간은 해제됩니다.</p>
+<h2 class="heading" id="garbage-수집-조건">
+  Garbage 수집 조건
+  <a class="anchor" href="#garbage-%ec%88%98%ec%a7%91-%ec%a1%b0%ea%b1%b4">#</a>
+</h2>
+<p>Garbage 수집은 다음 조건 중 하나가 충족될 경우 발생합니다.</p>
+<ul>
+<li>시스템의 실제 메모리가 부족한 경우</li>
+<li>Managed Heap의 할당된 개체에 사용되는 메모리가 허용되는 임계값을 초과한 경우.</li>
+<li><code>GC.Collect</code> 메서드가 호출된 경우.</li>
+</ul>
+<h2 class="heading" id="managed-heap">
+  Managed Heap
+  <a class="anchor" href="#managed-heap">#</a>
+</h2>
+<p>CLR은 Managed Heap을 초기화한 후 개체를 저장하고 관리하기 위해 Memory Segment를 할당합니다. 이 메모리를 Managed Heap이라고 하며 OS의 Native Heap과 대조됩니다.</p>
+<p>프로세스마다 Managed Heap이 있습니다. 프로세스의 모든 스레드는 같은 Heap에 개체 메모리를 할당합니다.</p>
+<p>Heap에 할당되는 개체의 수가 적을수록 GC의 일도 줄어듭니다. 개체를 할당할 때는 15 byte만 필요한 상황에서 32byte 배열을 할당하는 것처럼 필요 이상의 값을 사용하지 않아야 합니다.</p>
+<p>GC가 Trigger되면 GC는 비활성 개체에 의해 점유된 메모리를 회수합니다. 회수 프로세스는 활성 개체를 압축하여 함께 이동하도록 하며, 비활성 공간이 제거되어 Heap의 크기가 더 작아집니다. 이 프로세스로써 함께 할당된 개체가 Managed Heap에서 함께 유지되어 집약성을 계속 유지합니다.</p>
+<p>GC의 개입 수준은 할당 규모 및 Managed Heap에 남은 메모리의 크기에 따라 결정됩니다.</p>
+<p>Heap은 두 Heap(LOH, 소형 개체 Heap(일반적인 Heap))의 누적으로 간주할 수 있습니다. LOH에는 일반적인 85,000 byte 이상의 개체가 포함됩니다. 인스턴스 개체가 너무 커지는 경우는 거의 없습니다.</p>
+<blockquote>
+<p>LOH에서 사용할 수 있도록 개체의 임계값 크기를 구성할 수 있습니다.</p></blockquote>
+<h2 class="heading" id="세대">
+  세대
+  <a class="anchor" href="#%ec%84%b8%eb%8c%80">#</a>
+</h2>
+<p>이제 GC 알고리즘에 대해서 알아보겠습니다. GC 알고리즘은 몇 가지 고려 사항을 기반으로 합니다.</p>
+<ul>
+<li>GC는 Managed Heap보다 관리되는 일부 힙에서 더 빠르게 메모리를 압축할 수 있습니다.</li>
+<li>개체가 새로울 수록 수명은 더 짧고 개체가 오래될수록 수명은 더 길어집니다.</li>
+<li>새로운 개체일 수록 더 연결되는 경향이 있어 애플리케이션에서 거의 동시에 액세스됩니다.</li>
+</ul>
+<p>GC는 주로 수명이 짧은 개체의 회수와 함께 발생합니다. GC의 성능을 최적화하기 위해 Managed Heap은 주로 3세대로 나눠(0세대, 1세대 및 2세대) Heap을 관리합니다(그외 3세대 LOH Heap도 있습니다).</p>
+<p>GC는 새 개체를 0세대 저장합니다. 수집 이후에 남아 있는 개체는 1세대와 2세대로 이동합니다. 이렇게 일부 관리되는 힙을 압축하는 것이 더 빠르기 때문에 GC는 수집을 수행할 때마다 이 체계를 사용하여 특정 세대에서 메모리를 해제합니다.</p>
+<h3 class="heading" id="0세대">
+  0세대
+  <a class="anchor" href="#0%ec%84%b8%eb%8c%80">#</a>
+</h3>
+<p>수명이 가장 짧은 개체를 포함합니다 — 예를 들어 임시 변수 — GC가 가장 빈번하게 수집하는 세대입니다.</p>
+<h3 class="heading" id="1세대">
+  1세대
+  <a class="anchor" href="#1%ec%84%b8%eb%8c%80">#</a>
+</h3>
+<p>이 세대는 수명이 짧은 개체를 포함하며 수명이 짧은 개체와 수명이 긴 개체 사이에 버퍼 역할을 합니다.</p>
+<p>GC에서는 0세대 컬렉션을 수행한 후 연결할 수 있는 개체의 메모리를 압축한 후 1세대로 승격시킵니다 — 수집 후에도 존재하는 개체는 수명이 긴 성향이 있기 때문에, 이런 개체를 상위 세대로 승격시키는게 타당합니다. —</p>
+<h3 class="heading" id="2세대">
+  2세대
+  <a class="anchor" href="#2%ec%84%b8%eb%8c%80">#</a>
+</h3>
+<p>이 세대는 수명이 긴 개체가 포함되어 있습니다 — 수명이 긴 기체의 예로는 프로세스의 기간 동안 유지되는 정적 데이터가 있습니다 — 수집이 완료된 후에 2세대에 존재하는 개체는 다음 수집에서 연결할 수 없는 개체로 결정될 때까지 2세대에 보관됩니다.</p>
+<h2 class="heading" id="유지-및-승격">
+  유지 및 승격
+  <a class="anchor" href="#%ec%9c%a0%ec%a7%80-%eb%b0%8f-%ec%8a%b9%ea%b2%a9">#</a>
+</h2>
+<p>GC에서 회수되지 않는 개체는 남은 개체라고 하며 다음 세대로 승격됩니다.</p>
+<p>0세대에서 GC 수집 후 남은 개체 -&gt; 1세대로 승격
+1세대에서 GC 수집 후 남은 개체 -&gt; 2세대로 승격
+2세대에서 GC 수집 후 남은 개체 -&gt; 2세대에 유지</p>
+<h2 class="heading" id="임시-세대-및-세그먼트">
+  임시 세대 및 세그먼트
+  <a class="anchor" href="#%ec%9e%84%ec%8b%9c-%ec%84%b8%eb%8c%80-%eb%b0%8f-%ec%84%b8%ea%b7%b8%eb%a8%bc%ed%8a%b8">#</a>
+</h2>
+<p>0세대와 1세대의 개체는 수명이 짧아 <code>임시 새대</code>로 부릅니다. 임시 세대는 <code>임시 세그먼트</code>라는 <code>메모리 세그먼트</code>에 할당됩니다. GC에서 획득하는 새로운 각 세그먼트는 새로운 임시 세그먼트가 되며 0세대 GC에서 남은 개체를 포함합니다. 이전 세그먼트는 새로운 2세대 세그먼트가 됩니다.</p>
+<p>이 <code>임시 세그먼트</code>의 크기는 시스템이 32bit 또는 64bit인지, GC 형식(Workstation, Server GC)에 따라 달라집니다.</p>
+<p>임시 Garbageg 수집에서 해제된 메모리의 크기는 임시 세그먼트의 크기로 제한됩니다. 해제되는 메모리의 크기는 비활성 개체가 점유했던 공간에 비례합니다.</p>
+<h2 class="heading" id="gc-collect-중-수행되는-작업">
+  GC Collect 중 수행되는 작업
+  <a class="anchor" href="#gc-collect-%ec%a4%91-%ec%88%98%ed%96%89%eb%90%98%eb%8a%94-%ec%9e%91%ec%97%85">#</a>
+</h2>
+<p>GC Collection은 다음 단계로 구성됩니다.</p>
+<ol>
+<li>모든 활성 개체를 찾아 목록을 만들어 표시</li>
+<li>압축될 개체에 대한 참조를 업데이트하는 재배치</li>
+<li>비활성 개체에 의해 점유된 공간을 회수하고 남은 개체를 압축 — 압축 단계에서는 GC에서 남은 개체가 세그먼트의 오래된 쪽으로 이동됩니다. —
+<ul>
+<li>2세대 수집은 여러 세그먼트를 점유할 수 있어 오래된 세그먼트로 이동될 수 있습니다.</li>
+<li>LOH를 복사하면 성능 저하가 발생하기 때문에 LOH는 압축되지 않습니다 — .NET Core, .NET Framework 4.5.1 이상에서, GCSettings.LargeObjectHeapCompactionMode 속성을 사용하며 LOH를 복사할 수 있습니다. — 또한 다음 중 하나를 지정하여 하드 한도가 설정된 경우 LOH는 자동으로 압축됩니다.
+<ul>
+<li>컨테이너의 메모리 제한</li>
+<li>GCHeapHardLimit or GCHeapHardLimitPercent 런타임 구성 옵션</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>GC는 다음 정보를 사용하여 활성 개체 여부를 판단합니다.</p>
+<ul>
+<li>스택 루트</li>
+<li>GC Handle</li>
+<li>Static Data</li>
+</ul>
+<p>GC Collect가 시작되기 전에 GC Collect를 Trigger한 스레드를 제외한 모든 관리되는 스레드는 일시 중지됩니다(Suspended).</p>
+<p>
+
+
+
+
+
+
+
+
+
+
+
+<figure class="">
+
+    <div class="img-container" >
+        <img loading="lazy" alt="" src="https://learn.microsoft.com/ko-kr/dotnet/standard/garbage-collection/media/gc-triggered.png" >
+    </div>
+
+    
+</figure>
+</p>
+<h2 class="heading" id="관리되지-않는-리소스">
+  관리되지 않는 리소스
+  <a class="anchor" href="#%ea%b4%80%eb%a6%ac%eb%90%98%ec%a7%80-%ec%95%8a%eb%8a%94-%eb%a6%ac%ec%86%8c%ec%8a%a4">#</a>
+</h2>
+<p>대부분의 개체는 GC를 통해 관리되지만 일부 리소스는 명시적으로 관리해야 합니다 — 예를 들면 네트워크 소켓, 파일 핸들 등 개체가 있습니다. — GC에서 관리되지 않는 리소스를 캡슐화하는 데 사용되는 관리되는 개체의 수명을 추적할 수 있지만, 리소스 정리 방법에 대한 구체적인 정보는 알 수 없습니다.</p>
+<p>관리되지 않는 리소스를 정리하는 데 필요한 개체는 <code>Dispose</code> 메서드를 통해 명시적으로 리소스를 해제할 수 있습니다. 만약 <code>Dispose</code>를 호출하지 않는 경우 관리되지 않는 리소스를 해제하는 방법도 제공해야 합니다. 안전한 Handle을 사용하여 리소스를 래핑하거나 <code>Object.Finalize()</code> 메서드를 재정의해야 합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#888;font-style:italic">// Dispose 패턴 예제</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;font-style:italic;text-decoration:underline">public</span> <span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">FileHolder</span> : IDisposable
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">private</span> FileStream file;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">private</span> <span style="font-weight:bold;text-decoration:underline">bool</span> disposed = <span style="font-weight:bold;text-decoration:underline">false</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">public</span> FileHolder(<span style="font-weight:bold;text-decoration:underline">string</span> path)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        file = <span style="font-weight:bold;text-decoration:underline">new</span> FileStream(path, FileMode.Open);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">public</span> <span style="font-weight:bold;text-decoration:underline">void</span> Dispose()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        Dispose(<span style="font-weight:bold;text-decoration:underline">true</span>);
+</span></span><span style="display:flex;"><span>        GC.SuppressFinalize(<span style="font-weight:bold;text-decoration:underline">this</span>); <span style="color:#888;font-style:italic">// Finalizer 생략 요청. Dispose()가 명시적으로 호출되었으면 Finalizer는 필요 없기 때문</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">protected</span> <span style="font-weight:bold;text-decoration:underline">virtual</span> <span style="font-weight:bold;text-decoration:underline">void</span> Dispose(<span style="font-weight:bold;text-decoration:underline">bool</span> disposing)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">if</span> (disposed) <span style="font-weight:bold;text-decoration:underline">return</span>;
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">if</span> (disposing)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#888;font-style:italic">// 관리되는 리소스 해제</span>
+</span></span><span style="display:flex;"><span>            file?.Dispose();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#888;font-style:italic">// 관리되지 않는 리소스 해제 (필요시)</span>
+</span></span><span style="display:flex;"><span>        disposed = <span style="font-weight:bold;text-decoration:underline">true</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ~FileHolder()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        Dispose(<span style="font-weight:bold;text-decoration:underline">false</span>); <span style="color:#888;font-style:italic">// Finalizer 호출 시에는 관리되지 않는 리소스만 해제</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">using</span> (<span style="font-weight:bold;text-decoration:underline">var</span> holder = <span style="font-weight:bold;text-decoration:underline">new</span> FileHolder(<span style="color:#666;font-style:italic">&#34;data.txt&#34;</span>))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#888;font-style:italic">// 작업 수행</span>
+</span></span><span style="display:flex;"><span>} <span style="color:#888;font-style:italic">// 여기서 Dispose 자동 호출</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#888;font-style:italic">// SafeHandle을 상속하여 .NET 전용 래퍼 클래스로 Finalizer 구현 예제</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;font-style:italic;text-decoration:underline">public</span> <span style="font-weight:bold;font-style:italic;text-decoration:underline">sealed</span> <span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">MyHandle</span> : SafeHandleZeroOrMinusOneIsInvalid
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">public</span> MyHandle() : <span style="font-weight:bold;text-decoration:underline">base</span>(<span style="font-weight:bold;text-decoration:underline">true</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">protected</span> <span style="font-weight:bold;font-style:italic;text-decoration:underline">override</span> <span style="font-weight:bold;text-decoration:underline">bool</span> ReleaseHandle()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">return</span> CloseHandle(handle); <span style="color:#888;font-style:italic">// Win32 API</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    [DllImport(&#34;kernel32.dll&#34;)]
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;font-style:italic;text-decoration:underline">private</span> <span style="font-weight:bold;font-style:italic;text-decoration:underline">static</span> <span style="font-weight:bold;font-style:italic;text-decoration:underline">extern</span> <span style="font-weight:bold;text-decoration:underline">bool</span> CloseHandle(IntPtr hObject);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flexnowrap">
+
+        <div class="single-pagination-prev">
+            
+            <div class="single-pagination-container-prev">
+                <div class="single-pagination-text">←</div>
+                <div class="single-pagination-text">
+                    <a href="/posts/cpp-mem-manage-series/cpp-mem-manage-lib-4/">
+                        C&#43;&#43; Memory Management (4) - C&#43;&#43; Memory helper class
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>

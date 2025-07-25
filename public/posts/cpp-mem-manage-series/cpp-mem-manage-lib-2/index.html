@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    C&#43;&#43; Memory Management (2) - Allocator | Jay Tech Blog
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/"/>
+
+<meta property="og:url" content="http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/">
+  <meta property="og:site_name" content="Jay Tech Blog">
+  <meta property="og:title" content="C&#43;&#43; Memory Management (2) - Allocator">
+  <meta property="og:description" content="Allocator는 대부분에 경우에는 기본으로 제공하는 Allocator를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-07-21T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-07-21T00:00:00+00:00">
+    <meta property="article:tag" content="Cpp">
+    <meta property="article:tag" content="Cpp-Memory-Management">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Jay Tech Blog</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/posts/">Posts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/">C&#43;&#43; Memory Management (2) - Allocator</a></div>
+
+
+<div  class="autonumber" >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">C&#43;&#43; Memory Management (2) - Allocator</h1>
+        <p class="single-summary"><code>Allocator</code>는 대부분에 경우에는 기본으로 제공하는 <code>Allocator</code>를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</p>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="author">Jay645 </p>
+            
+            <p class="single-date">
+              <time datetime="2025-07-21T00:00:00&#43;00:00">July 21, 2025</time>
+              &nbsp; · &nbsp;2 min read
+            </p>
+          </div>
+        </div>
+        
+    </header>
+      <aside class="toc">
+        <p><strong>Table of contents</strong></p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#개요">개요</a></li>
+    <li><a href="#allocator의-동작-방식">Allocator의 동작 방식</a></li>
+    <li><a href="#allocator_traits">allocator_traits</a></li>
+    <li><a href="#rebind">rebind</a></li>
+  </ul>
+</nav>
+      </aside>
+    
+    <div class="single-content">
+      <p>필요 사전 지식: C++, STL Container에 대한 간단한 지식</p>
+<h2 class="heading" id="개요">
+  개요
+  <a class="anchor" href="#%ea%b0%9c%ec%9a%94">#</a>
+</h2>
+<p><code>Allocator</code>란 메모리 관리(할당, 해제, 생성, 소멸)을 위한 캡슐화 전략 개체입니다. 모든 표준 라이브러리 컴포넌트들의 메모리 관리는 <code>Allocator</code>를 통해서 이뤄집니다.</p>
+<p><code>Allocator</code>는 대부분에 경우에는 기본으로 제공하는 <code>Allocator</code>를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</p>
+<h2 class="heading" id="allocator의-동작-방식">
+  Allocator의 동작 방식
+  <a class="anchor" href="#allocator%ec%9d%98-%eb%8f%99%ec%9e%91-%eb%b0%a9%ec%8b%9d">#</a>
+</h2>
+<p><code>Allocator</code>는 다음과 같은 네 가지 책임을 갖습니다.</p>
+<ol>
+<li>메모리 할당 (<code>allocate</code>)</li>
+<li>메모리 해제 (<code>deallocate</code>)</li>
+</ol>
+<p>그외.</p>
+<ul>
+<li>개체 생성 (<code>construct</code>) C++20에서 제거되었습니다..</li>
+<li>개체 파괴 (<code>destroy</code>) C++20까지 제거되었습니다.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">template</span> &lt;<span style="font-weight:bold;text-decoration:underline">typename</span> T&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">MyAllocator</span> {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">using</span> value_type = T;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    T* <span style="color:#666;font-weight:bold;font-style:italic">allocate</span>(std::size_t n);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">deallocate</span>(T* p, std::size_t n);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><blockquote>
+<p>기본적인 인터페이스 구조입니다. <code>value_type</code>을 명시적으로 선언해야 합니다.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std::vector&lt;<span style="font-weight:bold;text-decoration:underline">int</span>, std::allocator&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt;&gt; vec;
+</span></span></code></pre></div><blockquote>
+<p><code>vector</code>의 <code>allocator</code>를 명시하려면 두번째 템플릿 인자에 명시하면 됩니다.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#888;font-weight:bold">#include</span> <span style="color:#888;font-weight:bold">&lt;cstdlib&gt;</span><span style="color:#888;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-weight:bold">#include</span> <span style="color:#888;font-weight:bold">&lt;memory&gt;</span><span style="color:#888;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-weight:bold">#include</span> <span style="color:#888;font-weight:bold">&lt;vector&gt;</span><span style="color:#888;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#888;font-weight:bold"></span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">template</span> &lt;<span style="font-weight:bold;text-decoration:underline">typename</span> T&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">MallocAllocator</span> {
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">using</span> value_type = T;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    MallocAllocator() = <span style="font-weight:bold;text-decoration:underline">default</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    T* <span style="color:#666;font-weight:bold;font-style:italic">allocate</span>(std::size_t n) {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">if</span> (<span style="font-weight:bold;text-decoration:underline">auto</span> ptr = <span style="font-weight:bold;text-decoration:underline">static_cast</span>&lt;T*&gt;(std::malloc(n * <span style="font-weight:bold;text-decoration:underline">sizeof</span>(T)))) {
+</span></span><span style="display:flex;"><span>            <span style="font-weight:bold;text-decoration:underline">return</span> ptr;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">throw</span> std::bad_alloc();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span> <span style="color:#666;font-weight:bold;font-style:italic">deallocate</span>(T* ptr, std::size_t) {
+</span></span><span style="display:flex;"><span>        std::free(ptr);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">template</span>&lt;<span style="font-weight:bold;text-decoration:underline">typename</span> T&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">using</span> MallocVector = std::vector&lt;T, MallocAllocator&lt;T&gt;&gt;;
+</span></span></code></pre></div><blockquote>
+<p>간단한 <code>malloc</code> 기반 <code>Allocator</code> 예제입니다.</p></blockquote>
+<h2 class="heading" id="allocator_traits">
+  allocator_traits
+  <a class="anchor" href="#allocator_traits">#</a>
+</h2>
+<p><code>allocator_traits</code>는 맴버 함수들을 보완해주는 <code>중간 인터페이스 레이어</code>입니다. 이를 통해 다양한 <code>allocator</code> 버전에 대응할 수 있는 유연한 구조를 제공합니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">template</span>&lt;<span style="font-weight:bold;text-decoration:underline">typename</span> T, <span style="font-weight:bold;text-decoration:underline">typename</span> Alloc = std::allocator&lt;T&gt;&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">class</span> <span style="color:#666;font-weight:bold;font-style:italic">MyContainer</span> {
+</span></span><span style="display:flex;"><span>    Alloc alloc;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">void</span> foo() {
+</span></span><span style="display:flex;"><span>        T* p = std::allocator_traits&lt;Alloc&gt;::allocate(alloc, 1);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><blockquote>
+<p><code>allocator</code>의 <code>allocate()</code> 대신 <code>std::allocator_traits&lt;Alloc&gt;::allocate()</code>를 호출하게 됩니다.</p></blockquote>
+<h2 class="heading" id="rebind">
+  rebind
+  <a class="anchor" href="#rebind">#</a>
+</h2>
+<p><code>rebind</code>는 <code>Allocator</code>가 원래 타입이 아닌 다른 타입에 대해서도 동작할 수 있도록 만드는 구조입니다.</p>
+<p>테이너는 내부 하나의 타입만 사용하는 게 아니라, 노드, 링크드 리스트 등 다양한 내부 타입에 대해 메모리를 할당해야 합니다. 하지만 <code>std::allocator&lt;T&gt;</code>는 오직 <code>T</code>만 다룰 수 있고 그래서 <code>U</code>에 대해 재정의된 할당자가 필요하고, 그걸 만들어주는 게 <code>rebind&lt;U&gt;::other</code>입니다.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">template</span>&lt;<span style="font-weight:bold;text-decoration:underline">typename</span> T&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">MyAllocator</span> {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">using</span> value_type = T;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">template</span>&lt;<span style="font-weight:bold;text-decoration:underline">typename</span> U&gt;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">struct</span> <span style="color:#666;font-weight:bold;font-style:italic">rebind</span> {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold;text-decoration:underline">using</span> other = MyAllocator&lt;U&gt;;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><blockquote>
+<p>위와 같은 정의가 있을 때</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-weight:bold;text-decoration:underline">typename</span> MyAllocator&lt;<span style="font-weight:bold;text-decoration:underline">int</span>&gt;::rebind&lt;<span style="font-weight:bold;text-decoration:underline">double</span>&gt;::other
+</span></span></code></pre></div><blockquote>
+<p>MyAllocator<!-- raw HTML omitted -->는 자동으로 MyAllocator<!-- raw HTML omitted --> 타입이 됩니다.</p></blockquote>
+<p><code>rebind</code>는 STL 내부에서 다양한 타입의 메모리를 할당해야 할 때 적절한 타입의 할당자를 꺼내 사용합니다.</p>
+<p>기존(C++20이전)에는 <code>rebind</code>를 직접 정의해야 했지만, <code>allocator_traits</code>을 통해 <code>rebind</code>를 정의합니다. <code>allocator_traits</code>의 <code>rebind</code> 템플릿 별칭 맴버는 다음과 같습니다.</p>
+<ul>
+<li><code>rebind_alloc&lt;T&gt;</code> : 컨테이너 내부에서 <code>Node</code>, <code>T</code>, <code>Pair&lt;K, V&gt;</code> 등 다른 타입 할당자가 필요할 때 사용합니다.</li>
+<li><code>rebind_traits&lt;T&gt;</code> : 라이브러리 구현자가 traits 연산을 반복적으로 쓰고 싶을 때 상요합니다. (<code>std::allocator_traits&lt;rebind_alloc&lt;T&gt;&gt;</code>)</li>
+</ul>
+<p><code>Allocator</code>에 대한 더 많은 내용들은 <code>Memory resources</code>에서 더 알아보겠습니다.</p>
+<blockquote>
+<p>참고 자료: <a href="https://cppreference.com/w/cpp/memory.html#Memory_resources">https://cppreference.com/w/cpp/memory.html#Memory_resources</a></p></blockquote>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+<div class="single-pagination">
+    <hr />
+
+    <div class="flexnowrap">
+
+        <div class="single-pagination-prev">
+            
+            <div class="single-pagination-container-prev">
+                <div class="single-pagination-text">←</div>
+                <div class="single-pagination-text">
+                    <a href="/posts/cpp-mem-manage-series/cpp-mem-manage-lib-1/">
+                        C&#43;&#43; Memory Management (1) - Smart Pointer
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="single-pagination-next">
+            
+            <div class="single-pagination-container-next">
+                <div class="single-pagination-text">
+                    <a href="/posts/cpp-mem-manage-series/cpp-mem-manage-lib-3/">
+                        C&#43;&#43; Memory Management (3) - Memory resources
+                    </a>
+                </div>
+                <div class="single-pagination-text">→</div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <hr />
+</div>
+
+
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>
