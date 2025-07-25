@@ -1,5 +1,5 @@
 ---
-title: ".NET GC Deep Dive - .NET GC Introduction (1)"
+title: ".NET GC Deep Dive (1) - .NET GC Introduction"
 author: "Jay645"
 date: "2025-07-25"
 summary: ".NET GC 덕분에 귀찮은 메모리 관리를 위임할 수 있어서 행복합니다."
