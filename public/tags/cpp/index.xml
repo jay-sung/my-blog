@@ -2,38 +2,45 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cpp on Jay Tech Blog</title>
-    <link>https://example.org/tags/cpp/</link>
+    <link>http://localhost:1313/tags/cpp/</link>
     <description>Recent content in Cpp on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 23 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://example.org/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>C&#43;&#43; Memory Management (4) - C&#43;&#43; Memory helper class</title>
-      <link>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-4/</link>
+      <link>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-4/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-4/</guid>
+      <guid>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-4/</guid>
       <description>C++에서 제공하는 Memory helper class에 대해서 알아봅니다.</description>
     </item>
     <item>
       <title>C&#43;&#43; Memory Management (3) - Memory resources</title>
-      <link>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-3/</link>
+      <link>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-3/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-3/</guid>
+      <guid>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-3/</guid>
       <description>&lt;code&gt;Allocator&lt;/code&gt;는 대부분에 경우에는 기본으로 제공하는 &lt;code&gt;Allocator&lt;/code&gt;를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</description>
     </item>
     <item>
       <title>C&#43;&#43; Memory Management (2) - Allocator</title>
-      <link>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/</link>
+      <link>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/</link>
       <pubDate>Mon, 21 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/</guid>
+      <guid>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-2/</guid>
       <description>&lt;code&gt;Allocator&lt;/code&gt;는 대부분에 경우에는 기본으로 제공하는 &lt;code&gt;Allocator&lt;/code&gt;를 사용하는 것이 일반적입니다. 하지만 정교하게 표준 컨테이너들의 메모리 관리를 제어해야하는 경우 사용자가 직접 지정할 수 있게 해줍니다.</description>
     </item>
     <item>
       <title>C&#43;&#43; Memory Management (1) - Smart Pointer</title>
-      <link>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-1/</link>
+      <link>http://localhost:1313/about/undead-servivor-portfolio/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://example.org/posts/cpp-mem-manage-series/cpp-mem-manage-lib-1/</guid>
+      <guid>http://localhost:1313/about/undead-servivor-portfolio/</guid>
+      <description>Unity 언데드 서바이벌 포트폴리오 입니다.</description>
+    </item>
+    <item>
+      <title>C&#43;&#43; Memory Management (1) - Smart Pointer</title>
+      <link>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-1/</link>
+      <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/cpp-mem-manage-series/cpp-mem-manage-lib-1/</guid>
       <description>C++에서 포인터를 쓰는 경우 웬만하면 &lt;code&gt;Smart Pointer&lt;/code&gt;를 사용하는 것을 강력하게 권장합니다.</description>
     </item>
   </channel>

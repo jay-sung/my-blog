@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-us"
+  dir="ltr">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+<link rel="icon" type="image/ico" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="http://localhost:1313/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="http://localhost:1313/apple-touch-icon.png">
+
+<meta name="description" content=""/>
+
+
+
+<title>
+    
+    Unity 언데드 서바이벌 포트폴리오 | Jay Tech Blog
+    
+</title>
+
+<link rel="canonical" href="http://localhost:1313/about/undead-servivor-portfolio/"/>
+
+<meta property="og:url" content="http://localhost:1313/about/undead-servivor-portfolio/">
+  <meta property="og:site_name" content="Jay Tech Blog">
+  <meta property="og:title" content="Unity 언데드 서바이벌 포트폴리오">
+  <meta property="og:description" content="Unity 언데드 서바이벌 포트폴리오 입니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="about">
+    <meta property="article:published_time" content="2025-07-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-07-30T00:00:00+00:00">
+    <meta property="article:tag" content="Portfolio">
+    <meta property="article:tag" content="Unity">
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</head>
+
+
+
+
+
+
+
+<body class="auto">
+
+  <div class="content">
+    <header>
+      
+
+<div class="header">
+
+    
+
+    <h1 class="header-title">
+        <a href="http://localhost:1313/">Jay Tech Blog</a>
+    </h1>
+
+    <div class="header-menu">
+        
+
+        
+        
+
+        <p
+            class="small ">
+            <a href="/" >
+                /home
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/posts" >
+                /posts
+            </a>
+        </p>
+        
+
+        <p
+            class="small ">
+            <a href="/about" >
+                /about
+            </a>
+        </p>
+        
+        
+    </div>
+
+    
+
+</div>
+
+    </header>
+
+    <main class="main">
+      
+
+
+
+
+<div class="breadcrumbs"><a href="/">Home</a><span class="breadcrumbs-separator">/</span><a href="/about/">Abouts</a><span class="breadcrumbs-separator">/</span>
+        <a href="/about/undead-servivor-portfolio/">Unity 언데드 서바이벌 포트폴리오</a></div>
+
+
+<div  class="autonumber" >
+  <article>
+    <header class="single-intro-container">
+        
+        <h1 class="single-title">Unity 언데드 서바이벌 포트폴리오</h1>
+        <p class="single-summary">Unity 언데드 서바이벌 포트폴리오 입니다.</p>
+        
+        <div class="single-subsummary">
+          
+          <div>
+            
+            <p class="author">Jay645 </p>
+            
+            <p class="single-date">
+              <time datetime="2025-07-30T00:00:00&#43;00:00">July 30, 2025</time>
+              &nbsp; · &nbsp;3 min read
+            </p>
+          </div>
+        </div>
+        
+    </header>
+      <aside class="toc">
+        <p><strong>Table of contents</strong></p>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#소개">소개</a></li>
+    <li><a href="#기능">기능</a>
+      <ul>
+        <li><a href="#무기-시스템">무기 시스템</a></li>
+        <li><a href="#적-타겟팅-및-발사-로직">적 타겟팅 및 발사 로직</a></li>
+        <li><a href="#스폰-시스템">스폰 시스템</a></li>
+        <li><a href="#오브젝트-풀링">오브젝트 풀링</a></li>
+        <li><a href="#아이템-및-강화-시스템">아이템 및 강화 시스템</a></li>
+        <li><a href="#ui-시스템">UI 시스템</a></li>
+        <li><a href="#플레이어-이동-및-조작">플레이어 이동 및 조작</a></li>
+      </ul>
+    </li>
+    <li><a href="#이슈">이슈</a>
+      <ul>
+        <li><a href="#object-pooling">Object Pooling</a></li>
+        <li><a href="#spawner-생성-알고리즘">Spawner 생성 알고리즘</a></li>
+        <li><a href="#weaponitem-구조화-scriptableobject--component-기반">Weapon/Item 구조화 (ScriptableObject + Component 기반)</a></li>
+        <li><a href="#uiux-디버깅">UI/UX 디버깅</a></li>
+      </ul>
+    </li>
+    <li><a href="#회고">회고</a></li>
+  </ul>
+</nav>
+      </aside>
+    
+    <div class="single-content">
+      <p><a href="/images/undead-servivor-video.mp4">
+
+
+
+
+
+
+
+
+
+
+
+<figure class="">
+
+    <div class="img-container" >
+        <img loading="lazy" alt="" src="/images/undead-servivor-image.png" >
+    </div>
+
+    
+</figure>
+</a></p>
+<blockquote>
+<p>안녕하세요 Unity 캐주얼 게임 Undead Servivor입니다.</p></blockquote>
+<blockquote>
+<p>기술 스택: Unity, C#, Git</p></blockquote>
+<h2 class="heading" id="소개">
+  소개
+  <a class="anchor" href="#%ec%86%8c%ea%b0%9c">#</a>
+</h2>
+<p>Undead Survivor는 Unity 기반으로 개발한 탑다운 형식의 서바이벌 캐주얼 게임입니다.
+플레이어는 몰려오는 언데드 무리 속에서 다양한 무기를 조합하고 강화하여 최대한 오래 생존하는 것을 목표로 합니다.</p>
+<p>이 프로젝트는 Object Pooling, ScriptableObject 기반 데이터 구조화, 랜덤 스폰 알고리즘, UI 동기화, 무기 레벨 업 시스템 등 게임 개발의 핵심 시스템을 구현했습니다.</p>
+<h2 class="heading" id="기능">
+  기능
+  <a class="anchor" href="#%ea%b8%b0%eb%8a%a5">#</a>
+</h2>
+<h3 class="heading" id="무기-시스템">
+  무기 시스템
+  <a class="anchor" href="#%eb%ac%b4%ea%b8%b0-%ec%8b%9c%ec%8a%a4%ed%85%9c">#</a>
+</h3>
+<ul>
+<li>Melee / Range 타입 무기 구분</li>
+<li>ScriptableObject 기반의 무기 데이터(ItemData)를 통해 다양한 무기를 유연하게 생성/관리</li>
+<li>레벨업 시 데미지 및 발사 개수 증가, MaxCount 제한 로직 포함</li>
+</ul>
+<h3 class="heading" id="적-타겟팅-및-발사-로직">
+  적 타겟팅 및 발사 로직
+  <a class="anchor" href="#%ec%a0%81-%ed%83%80%ea%b2%9f%ed%8c%85-%eb%b0%8f-%eb%b0%9c%ec%82%ac-%eb%a1%9c%ec%a7%81">#</a>
+</h3>
+<ul>
+<li>가장 가까운 적을 <code>Scanner.nearestTarget</code>으로 추적 (RayCasting 기반)</li>
+<li>일정 주기로 타겟 방향으로 투사체 발사 (직선 방향 기반)</li>
+<li>Bullet은 충돌 시 Per(관통 수) 소모 및 제거 처리</li>
+</ul>
+<h3 class="heading" id="스폰-시스템">
+  스폰 시스템
+  <a class="anchor" href="#%ec%8a%a4%ed%8f%b0-%ec%8b%9c%ec%8a%a4%ed%85%9c">#</a>
+</h3>
+<ul>
+<li>원형(Random Circle) 기반 스폰 알고리즘 구현</li>
+<li>플레이어 주변 반지름 내에서 적이 균일하게 스폰되도록 설계</li>
+<li><code>Spawner.SpawnEnemy()</code> 메서드에서 Object Pooling 적용</li>
+</ul>
+<h3 class="heading" id="오브젝트-풀링">
+  오브젝트 풀링
+  <a class="anchor" href="#%ec%98%a4%eb%b8%8c%ec%a0%9d%ed%8a%b8-%ed%92%80%eb%a7%81">#</a>
+</h3>
+<ul>
+<li>Bullet, Enemy, Effect 등 반복 생성 오브젝트에 풀링 적용</li>
+<li><code>PoolManager.GetObject(prefabId)</code>로 재사용</li>
+<li>성능 최적화 및 메모리 할당 최소화</li>
+</ul>
+<h3 class="heading" id="아이템-및-강화-시스템">
+  아이템 및 강화 시스템
+  <a class="anchor" href="#%ec%95%84%ec%9d%b4%ed%85%9c-%eb%b0%8f-%ea%b0%95%ed%99%94-%ec%8b%9c%ec%8a%a4%ed%85%9c">#</a>
+</h3>
+<ul>
+<li>무기 / 장비 / 힐 아이템 구분 및 레벨별 효과 적용</li>
+<li>버튼 클릭 시 <code>Item.OnClick()</code>을 통해 무기/장비 생성 또는 강화</li>
+<li><code>ItemData</code> 기반의 설명과 아이콘 표시</li>
+</ul>
+<h3 class="heading" id="ui-시스템">
+  UI 시스템
+  <a class="anchor" href="#ui-%ec%8b%9c%ec%8a%a4%ed%85%9c">#</a>
+</h3>
+<ul>
+<li>무기/아이템 이름, 설명, 레벨 등을 실시간으로 UI 반영</li>
+<li><code>Awake</code>, <code>OnEnable</code>, <code>LateUpdate</code>에서 UI 생명주기 조절</li>
+</ul>
+<h3 class="heading" id="플레이어-이동-및-조작">
+  플레이어 이동 및 조작
+  <a class="anchor" href="#%ed%94%8c%eb%a0%88%ec%9d%b4%ec%96%b4-%ec%9d%b4%eb%8f%99-%eb%b0%8f-%ec%a1%b0%ec%9e%91">#</a>
+</h3>
+<ul>
+<li><code>PlayerMovement.cs</code>에서 Input 기반 이동 구현</li>
+<li>Rigidbody2D 물리 기반의 부드러운 이동 처리</li>
+<li>회피나 넉백 등 확장을 고려한 구조 설계</li>
+</ul>
+<h2 class="heading" id="이슈">
+  이슈
+  <a class="anchor" href="#%ec%9d%b4%ec%8a%88">#</a>
+</h2>
+<h3 class="heading" id="object-pooling">
+  Object Pooling
+  <a class="anchor" href="#object-pooling">#</a>
+</h3>
+<ul>
+<li>
+<p>이슈: Instantiate/Destroy 반복으로 인한 GC 발생 및 프레임 드랍.</p>
+</li>
+<li>
+<p>해결: PoolManager를 구현하여 재사용 가능한 구조를 만들고, 각 무기 및 적 오브젝트의 활성화/비활성화로 처리.</p>
+</li>
+<li>
+<p>성과: 프레임 안정성 확보. 손쉬운 개체 관리</p>
+</li>
+</ul>
+<h3 class="heading" id="spawner-생성-알고리즘">
+  Spawner 생성 알고리즘
+  <a class="anchor" href="#spawner-%ec%83%9d%ec%84%b1-%ec%95%8c%ea%b3%a0%eb%a6%ac%ec%a6%98">#</a>
+</h3>
+<ul>
+<li>
+<p>이슈: Point 배열 기반 랜덤 스폰은 확장성과 유지 보수성이 떨어짐.</p>
+</li>
+<li>
+<p>해결: GetRandomPointOnCircle 함수 도입으로 원형 반경 내 균등 분포 스폰 구현 (원주 기반 랜덤).</p>
+</li>
+<li>
+<p>성과: 코드 간결화, 동적 레벨 디자인 가능성 확보. 유지 보수성 증가</p>
+</li>
+</ul>
+<h3 class="heading" id="weaponitem-구조화-scriptableobject--component-기반">
+  Weapon/Item 구조화 (ScriptableObject + Component 기반)
+  <a class="anchor" href="#weaponitem-%ea%b5%ac%ec%a1%b0%ed%99%94-scriptableobject--component-%ea%b8%b0%eb%b0%98">#</a>
+</h3>
+<ul>
+<li>
+<p>이슈: 무기와 아이템 업그레이드 구조가 하드코딩되어 확장 어려움.</p>
+</li>
+<li>
+<p>해결: ItemData ScriptableObject 도입 → 데이터 기반 설계. Weapon과 Gear 클래스가 이를 기반으로 동작.</p>
+</li>
+<li>
+<p>성과: 신규 아이템 추가 시 코드 수정 최소화. 레벨 업 기능과 UI 연동 용이.</p>
+</li>
+</ul>
+<h3 class="heading" id="uiux-디버깅">
+  UI/UX 디버깅
+  <a class="anchor" href="#uiux-%eb%94%94%eb%b2%84%ea%b9%85">#</a>
+</h3>
+<ul>
+<li>
+<p>이슈: 아이템 레벨 UI 미갱신 문제, null 예외 발생.</p>
+</li>
+<li>
+<p>해결: OnEnable 시점에서 UI 갱신 및 null 체크 강화. 버튼 비활성화 타이밍 명확히 분리.</p>
+</li>
+<li>
+<p>성과: 사용자 경험 안정화, UI 동기화 정확도 개선.</p>
+</li>
+</ul>
+<h2 class="heading" id="회고">
+  회고
+  <a class="anchor" href="#%ed%9a%8c%ea%b3%a0">#</a>
+</h2>
+<p>이번 프로젝트는 Unity를 활용해 처음으로 게임을 제작해본 경험이었습니다.</p>
+<p>Bullet이나 Weapon 시스템에서 Rigidbody 누락, Count 미반영, UI 비동기 업데이트 문제 등 다양한 버그를 겪었고, 이를 통해 Unity의 생명주기 함수들(Awake, Start, OnEnable)의 차이를 이해하게 되었습니다.</p>
+<p>또한 ScriptableObject를 통해 데이터 중심 개발 방식의 장점을 체감했고, Object Pooling을 직접 구현하면서 Unity의 메모리 관리에 대한 실질적인 감각도 익힐 수 있었습니다.</p>
+<p>게임을 확장한다면 더 체계화된 구조로 더 발전하고 싶은 생각이 들었습니다. 예를 들어 각 개체의 인덱스 기반의 관리에서 열거형을 통해 더 직관적인 이름으로 실수를 줄이는 방법처럼 버그를 발생시키더라도 빠르게 문제점을 찾아내기 좋은 구조에 대해서 고민하게 되었습니다.
+전반적으로 작은 규모라도 <code>제대로 게임을 혼자서 끝까지 만든 경험</code>이 게임 개발자로서의 자신감을 높이는 계기가 되었습니다.</p>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+  <div class="back-to-top">
+    <a href="#top">
+      back to top
+    </a>
+  </div>
+  
+
+</div>
+
+
+    </main>
+  </div>
+
+  
+  
+
+
+
+
+
+    
+
+
+
+
+  <footer>
+    
+
+    
+    
+
+
+
+
+
+    
+
+
+
+
+    
+    <p>Powered by
+        <a href="https://gohugo.io/">Hugo</a>
+        and
+        <a href="https://github.com/tomfran/typo">tomfran/typo</a>
+    </p>
+    
+    
+    
+
+
+  </footer>
+
+  
+</body>
+
+<script src="/js/theme-switch.js"></script>
+<script defer src="/js/copy-code.js"></script>
+</html>
