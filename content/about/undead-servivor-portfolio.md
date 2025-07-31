@@ -14,7 +14,7 @@ hideBackToTop: false
 
 [![](/images/undead-servivor-image.png)](/images/undead-servivor-video.mp4)
 
-> 안녕하세요 Unity 캐주얼 게임 Undead Servivor입니다.
+> 안녕하세요 Unity 캐주얼 게임 Undead Servivor입니다. 사진을 클릭하면 시연영상을 볼 수 있습니다.
 
 > 기술 스택: Unity, C#, Git
 
