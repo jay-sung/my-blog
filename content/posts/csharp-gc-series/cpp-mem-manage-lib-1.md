@@ -324,3 +324,5 @@ public sealed class MyHandle : SafeHandleZeroOrMinusOneIsInvalid
     private static extern bool CloseHandle(IntPtr hObject);
 }
 ```
+
+> 자료: https://learn.microsoft.com/ko-kr/dotnet/standard/garbage-collection/fundamentals
