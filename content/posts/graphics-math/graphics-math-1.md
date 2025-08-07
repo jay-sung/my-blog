@@ -24,8 +24,7 @@ hideBackToTop: false
 두 점 `P1`, `P2`의 차 `P2 - P1`은 **P1에서 P2로 향하는 벡터**를 의미합니다.  
 또한, 점에 벡터를 더하면 그 방향만큼 이동한 새로운 점이 됩니다.
 
-```math
-\text{Point} + \text{Vector} = \text{Moved Point}
+$$ \text{Point} + \text{Vector} = \text{Moved Point} $$
 
 ## Vector 연산
 
