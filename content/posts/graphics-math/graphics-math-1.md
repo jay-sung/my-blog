@@ -2,7 +2,7 @@
 title: "Math for Graphics (1) - Point, Vector"
 author: "Jay645"
 date: "2025-08-07"
-summary: "그래픽스를 공부하는데 필요한 수학에 대해서 알아봅니다."
+summary: "Point와 Vector에 대해서 알아봅니다."
 toc: true
 readTime: true
 autonumber: true
