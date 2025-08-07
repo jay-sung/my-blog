@@ -1,5 +1,5 @@
 ---
-title: "C++ Utilities library (1) - Optional"
+title: "C++ Utilities library (1) - optional"
 author: "Jay645"
 date: "2025-08-06"
 summary: "Optional을 통해 값이 존재할 수도, 존재할 수도 있음을 표현할 수 있습니다."

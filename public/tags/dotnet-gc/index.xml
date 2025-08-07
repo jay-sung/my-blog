@@ -6,8 +6,15 @@
     <description>Recent content in Dotnet-Gc on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 25 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 04 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/dotnet-gc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>.NET GC Deep Dive (2) - LOH(Large Object) Heap</title>
+      <link>http://localhost:1313/posts/csharp-gc-series/cpp-mem-manage-lib-2/</link>
+      <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/csharp-gc-series/cpp-mem-manage-lib-2/</guid>
+      <description>.NET GC에서 LOH가 성능에 미치는 영향에 대해서 알아봅니다.</description>
+    </item>
     <item>
       <title>.NET GC Deep Dive (1) - .NET GC Introduction</title>
       <link>http://localhost:1313/posts/csharp-gc-series/cpp-mem-manage-lib-1/</link>

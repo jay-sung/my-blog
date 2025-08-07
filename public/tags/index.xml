@@ -6,8 +6,29 @@
     <description>Recent content in Tags on Jay Tech Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 30 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 06 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cpp</title>
+      <link>http://localhost:1313/tags/cpp/</link>
+      <pubDate>Wed, 06 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/cpp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Csharp</title>
+      <link>http://localhost:1313/tags/csharp/</link>
+      <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/csharp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dotnet-Gc</title>
+      <link>http://localhost:1313/tags/dotnet-gc/</link>
+      <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/dotnet-gc/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Portfolio</title>
       <link>http://localhost:1313/tags/portfolio/</link>
@@ -20,27 +41,6 @@
       <link>http://localhost:1313/tags/unity/</link>
       <pubDate>Wed, 30 Jul 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/tags/unity/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Csharp</title>
-      <link>http://localhost:1313/tags/csharp/</link>
-      <pubDate>Fri, 25 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/csharp/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Dotnet-Gc</title>
-      <link>http://localhost:1313/tags/dotnet-gc/</link>
-      <pubDate>Fri, 25 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/dotnet-gc/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Cpp</title>
-      <link>http://localhost:1313/tags/cpp/</link>
-      <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/cpp/</guid>
       <description></description>
     </item>
     <item>

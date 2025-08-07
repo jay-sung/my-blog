@@ -61,7 +61,7 @@
 
 
 
-<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+<link rel="stylesheet" href="/assets/combined.min.56b1873d8852f8a5a109abda36c1bfcde55cb48e5bcbe0d8c934a196a7dc374a.css" media="all">
 
 
 
@@ -245,9 +245,11 @@
 </span></span><span style="display:flex;"><span>    <span style="font-weight:bold;text-decoration:underline">auto</span> shared = myObj.getShared(); <span style="color:#888;font-style:italic">// 여기서 이상한 동작을 함. 같은 포인터를 둘 다 소유하게 됨.
 </span></span></span><span style="display:flex;"><span><span style="color:#888;font-style:italic"></span>    <span style="font-weight:bold;text-decoration:underline">return</span> 0;
 </span></span><span style="display:flex;"><span>} <span style="color:#888;font-style:italic">// &lt;-- 결국 이미 free된 포인터를 또 free하게 되고 프로그램은 죽어버립니다.
-</span></span></span></code></pre></div><pre tabindex="0"><code>malloc: *** error for object 0x16fbfb4bb: pointer being freed was not allocated
+</span></span></span></code></pre></div><pre class="mermaid">malloc: *** error for object 0x16fbfb4bb: pointer being freed was not allocated
 malloc: *** set a breakpoint in malloc_error_break to debug
-</code></pre><p>이렇게 죽어버립니다. 엉뚱한 포인터를 free 해버려 죽어버리는거죠.</p>
+</pre>
+
+<p>이렇게 죽어버립니다. 엉뚱한 포인터를 free 해버려 죽어버리는거죠.</p>
 <h2 class="heading" id="bad_weak_ptr-c11">
   <code>bad_weak_ptr</code> (C++11)
   <a class="anchor" href="#bad_weak_ptr-c11">#</a>
@@ -274,6 +276,16 @@ malloc: *** set a breakpoint in malloc_error_break to debug
     </div>
   </article>
 
+  
+  
+  
+  <script defer
+    type="module"
+    id="mermaid_script"
+    data-light-theme="default"
+    data-dark-theme="dark"
+    src='/js/mermaid.js'>
+  </script>
   
 
   

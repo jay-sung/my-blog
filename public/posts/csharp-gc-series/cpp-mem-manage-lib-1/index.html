@@ -61,7 +61,7 @@
 
 
 
-<link rel="stylesheet" href="/assets/combined.min.92c3bf7119b98cfdc79e93f36a451eb901d8bbbfed7d75814e6436cf6c9085dc.css" media="all">
+<link rel="stylesheet" href="/assets/combined.min.56b1873d8852f8a5a109abda36c1bfcde55cb48e5bcbe0d8c934a196a7dc374a.css" media="all">
 
 
 
@@ -277,7 +277,7 @@
 </span></span><span style="display:flex;"><span>ETC(그외)
 </span></span><span style="display:flex;"><span>[kernel_space] (여기부터는 사용자 모드로는 접근 불가 영역)
 </span></span></code></pre></div><p>이 영역에서 <code>Heap</code> 영역이 중요합니다. 이 <code>Heap</code>을 GC가 어떻게 관리하느냐가 GC의 핵심이기 때문입니다. 무튼, 프로세스 공간의 <code>Heap</code>이 할당되는 공간이 Virtual Address Space입니다. 그리고 이 공간의 상태가 위에서 말한 free, reversed, committed 상태로 이어지고 WinAPI를 통해 호출하는거죠. 그 이후 Page에서 Physics Memory와 Mapping되어 저장됩니다.</p>
-<pre tabindex="0"><code>[가상 주소 공간 (Virtual Address Space)]
+<pre class="mermaid">[가상 주소 공간 (Virtual Address Space)]
 
 ┌───────────────┐
 │ 0x00000000    │
@@ -311,7 +311,9 @@
 ├───────────────┤
 │ ...           │
 └───────────────┘
-</code></pre><p>그러면 다시 GC로 넘어가겠습니다.</p>
+</pre>
+
+<p>그러면 다시 GC로 넘어가겠습니다.</p>
 <h2 class="heading" id="메모리-할당">
   메모리 할당
   <a class="anchor" href="#%eb%a9%94%eb%aa%a8%eb%a6%ac-%ed%95%a0%eb%8b%b9">#</a>
@@ -319,7 +321,7 @@
 <p>새 프로세스에서 런타임에 <code>Heap</code>에 할당한 메모리는 <code>Pointer</code>를 통해서 관리됩니다. 이 부분은 <code>Pointer</code>를 다루는 것과 큰 차이는 없습니다. 하지만 GC는 미리 인접한 주소 공간 영역을 예약합니다 — 이 영역을 <code>관리되는 힙(Managed Heap)</code>이라고 부릅니다 — Managed Heap에서는 다음 예약될 Heap의 주소의 포인터를 관리합니다. 모든 참조 형식(Reference Type)은 이 Managed Heap에 할당됩니다.</p>
 <p>애플리케이션에서 처음 참조 형식을 만드는 경우, 기본 주소로 할당됩니다. 그리고 다음 개체를 만들면 첫 번째 개체 바로 다음 주소 공간에 해당 개체에 대한 메모리를 할당합니다. 주소 공간을 사용할 수 있는 한 런타임은 이러한 방법으로 새 개체에 대한 공간을 계속 할당합니다.</p>
 <p>관리되는 힙에서 메모리를 할당하면 관리되지 않는 힙에서 메모리를 할당하는 것보다 일반적으로 속도가 더 빠릅니다. 런타임에서는 포인터에 값을 더하여 개체 메모리를 할당하기 때문에, 스택에서 메모리를 할당하는 속도만큼 빠릅니다. 또한 연속으로 할당된 새 개체는 관리되는 힙에 인접하여 저장되므로 애플리케이션에서 개체에 따른 속도로 엑세스할 수 있습니다.</p>
-<pre tabindex="0"><code>┌────────────────────────────────┐
+<pre class="mermaid">┌────────────────────────────────┐
 │    프로세스 가상 주소 공간                            │
 │                                                   │
 │   ┌────────────────────────┐      │
@@ -331,7 +333,9 @@
 │   └────────────────────────┘      │
 │                                                   │
 └────────────────────────────────┘
-</code></pre><h2 class="heading" id="메모리-해제">
+</pre>
+
+<h2 class="heading" id="메모리-해제">
   메모리 해제
   <a class="anchor" href="#%eb%a9%94%eb%aa%a8%eb%a6%ac-%ed%95%b4%ec%a0%9c">#</a>
 </h2>
@@ -534,6 +538,16 @@
     </div>
   </article>
 
+  
+  
+  
+  <script defer
+    type="module"
+    id="mermaid_script"
+    data-light-theme="default"
+    data-dark-theme="dark"
+    src='/js/mermaid.js'>
+  </script>
   
 
   
